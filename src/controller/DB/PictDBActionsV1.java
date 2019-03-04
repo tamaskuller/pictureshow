@@ -1,0 +1,435 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package controller.DB;
+
+import controller.DB.exceptions.IllegalOrphanException;
+import controller.DB.exceptions.NonexistentEntityException;
+import view.enums.FormTypes;
+import view.enums.PictCompTypes;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+import model.PictureButtonTable;
+import model.PictureComponentTable;
+import model.PictureFrameTable;
+import model.PicturePaneTable;
+import model.exceptions.PreexistingEntityException;
+import view.FormFactoryV1;
+import controller.maps.AnimTypeMap;
+import view.PictCompFactV1;
+import view.PictureButton;
+import view.PictureFrame;
+import view.enums.MotionTypes;
+import view.interfaces.PictureComponentInterface;
+import view.interfaces.PictureFrameInterface;
+import view.interfaces.PicturePaneInterface;
+import view.interfaces.PicturePaneGettersInt;
+import view.interfaces.PictureFrameGettersInt;
+import view.interfaces.PictureComponentGettersInt;
+import enums.MapFactoryTypes;
+import controller.maps.MapCreatorFactV1;
+import controller.maps.MapFactoryAbs;
+import enums.DataSourceTypes;
+import java.util.ArrayList;
+import java.util.List;
+import model.ImageFactoryV1;
+import util.EnvironmentParams;
+import util.FileOperations;
+import view.interfaces.AttachedGettersInt;
+import view.recordtypeclasses.JFrameBaseFormParams;
+import view.recordtypeclasses.PictCompParams;
+import view.util.Observer;
+import view.util.Subject;
+
+/**
+ *
+ * @author Tamas Kuller
+ */
+public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements PictDBActionsInt, Subject {    
+    static PictureFrameTableJpaController pictureFrameCont;
+    static PicturePaneTableJpaController picturePaneCont;
+    static PictureComponentTableJpaController pictureCompCont;
+    static PictureButtonTableJpaController pictureButtonCont;
+    static PictDBActionsV1 instance;
+    static List<Observer> observers;
+            
+    static {
+        instance=new PictDBActionsV1();
+    }
+    
+    private PictDBActionsV1() {                
+    EntityManagerFactory factory=Persistence.createEntityManagerFactory("ShowPicturePU");                   
+    pictureFrameCont=new PictureFrameTableJpaController(factory);        
+    picturePaneCont=new PicturePaneTableJpaController(factory);        
+    pictureCompCont=new PictureComponentTableJpaController(factory);        
+    pictureButtonCont=new PictureButtonTableJpaController(factory);
+    observers=new ArrayList<>();
+    }        
+          
+    
+    public static PictDBActionsV1 getInstance()
+    {
+        return instance;
+    }
+    
+    @Override
+    public synchronized void saveFrame(PictureFrameInterface pictureFrameInterface, String name)throws PreexistingEntityException
+    {                
+        PictureFrameGettersInt pictureFrameGetters=(PictureFrameGettersInt) pictureFrameInterface.getGetters();
+        String oldTitle=pictureFrameGetters.getTitle();
+        pictureFrameInterface.setTitle(name);        
+        System.out.println("oldtitle"+oldTitle+"getTitle"+pictureFrameGetters.getTitle());
+        System.out.println(oldTitle.equals(pictureFrameGetters.getTitle()));
+        //if (!oldTitle.equals(pictureFrameGetters.getTitle())&&
+        if (!pictureFrameGetters.getTitle().isEmpty())
+            {                       
+                System.out.println("mentés");
+            PictureFrameTable pictureFrameTable=new PictureFrameTable();
+                setFrameFields(pictureFrameTable, pictureFrameGetters);
+            try {
+                saveFrameRecord(pictureFrameTable, pictureFrameInterface,pictureFrameGetters, oldTitle);
+                for (PicturePaneInterface picturePane : pictureFrameInterface.getPicturePanes()) {
+                    savePane(picturePane, pictureFrameTable, null);            
+                    }
+            }             
+            catch (PreexistingEntityException ex)
+            {
+                throw ex;
+//                System.out.println(pictureFrameTable.getName()+" - "+ex.getMessage());
+            }
+            catch (Exception ex) {
+                Logger.getLogger(PictDBActionsV1.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            notifyObserver(Observer.Action.DB_SAVE_FRAME);
+
+          }
+        
+        
+    }
+    
+    private void saveFrameRecord(PictureFrameTable pictureFrameTable,PictureFrameInterface pictureFrameInterface,PictureFrameGettersInt pictureFrameGetters, String oldTitle) throws Exception
+    {
+        try {            
+            pictureFrameCont.create(pictureFrameTable);
+        } 
+        catch (Exception ex)
+                  {                      
+                  Query query=pictureFrameCont.getEntityManager().createNamedQuery("PictureFrameTable.findByName");
+                  query.setParameter("name", pictureFrameGetters.getTitle());
+                  if (!query.getResultList().isEmpty())//&&!oldTitle.equals(pictureFrameGetters.getTitle()))                      
+                        {                        
+                        String title=pictureFrameGetters.getTitle();
+                        pictureFrameInterface.setTitle(oldTitle);                                                                        
+                        throw new PreexistingEntityException("Pictureframe " + title + " already exists. ", ex);
+                        }
+                  else
+                    throw ex; 
+                  }               
+    }
+    
+    
+    private void setFrameFields(PictureFrameTable pictureFrameTable,PictureFrameGettersInt pictureFrameGetters)
+    {
+            
+            pictureFrameTable.setAdminEnabled(booleanToShort(pictureFrameGetters.isAdminEnabled()));            
+            pictureFrameTable.setCurrBaseSizeHeight(pictureFrameGetters.getCurrBaseSize().getHeight());
+            pictureFrameTable.setCurrBaseSizeWidth(pictureFrameGetters.getCurrBaseSize().getWidth());        
+            pictureFrameTable.setFrameSizeHeight(pictureFrameGetters.getFrameSize().getHeight());
+            pictureFrameTable.setFrameSizeWidth(pictureFrameGetters.getFrameSize().getWidth());
+            pictureFrameTable.setFullState(booleanToShort (pictureFrameGetters.isFullState()));                
+            pictureFrameTable.setName(pictureFrameGetters.getTitle());            
+            if (pictureFrameGetters.getImage()!=null)
+               {       
+                pictureFrameTable.setImageName(pictureFrameGetters.getImage().getImageName());
+                FileOperations.putFile(pictureFrameGetters.getImagePath(),EnvironmentParams.REL_PATH_TO_PICT+pictureFrameGetters.getImage().getImageName());            
+                }
+            //pictureframe.setOldBackGroundColor(pictureFrame.getOldBackGroundColor().toString());
+            pictureFrameTable.setSizeRatioContPaneHeight(pictureFrameGetters.getSizeRatioContPaneHeight());
+            pictureFrameTable.setSizeRatioContPaneWidth(pictureFrameGetters.getSizeRatioContPaneWidth());
+            //pictureframe.setSizeRatioHeight(pictureFrameInterface.getSizeRatioHeight());
+            //pictureframe.setSizeRatioWidth(pictureFrameInterface.getSizeRatioWidth());
+            
+    }
+
+    
+    @Override
+    public void savePane(PicturePaneInterface picturePaneInterface,PictureFrameTable parentPictureFrameTable, PicturePaneTable parentPicturePaneTable) {
+            PicturePaneTable picturePaneTable=new PicturePaneTable();
+            setPaneFields(picturePaneInterface, parentPictureFrameTable, parentPicturePaneTable,picturePaneTable);
+            picturePaneCont.create(picturePaneTable);                 
+            if (picturePaneInterface instanceof PictureComponentInterface)
+                {
+                PictureComponentInterface pictureComponentInterface=(PictureComponentInterface) picturePaneInterface;
+                saveComponent(pictureComponentInterface, picturePaneTable, true,null);                                                           
+                }            
+            
+            for (AttachedGettersInt pictureComponent : picturePaneInterface.getPictureComponents()) {                                               
+                if (pictureComponent instanceof PicturePaneInterface)
+                    //System.out.println("mentés volna itt");
+                    savePane((PicturePaneInterface) pictureComponent, null, picturePaneTable);
+                else
+                    if (pictureComponent instanceof PictureButton)
+                        {
+                        PictureButtonTable pictureButtonTable=saveButton(picturePaneTable);
+                        saveComponent(pictureComponent, picturePaneTable, false,pictureButtonTable);                        
+                        }
+                    else
+                        saveComponent(pictureComponent, picturePaneTable,false,null);
+            }            
+        }
+            
+      
+    private void setPaneFields(PicturePaneInterface picturePaneInterface,PictureFrameTable parentPictureFrameTable, PicturePaneTable parentPicturePaneTable,PicturePaneTable picturePaneTable )
+    {
+        PicturePaneGettersInt picturePaneGetters=(PicturePaneGettersInt) picturePaneInterface.getGetters();
+        picturePaneTable.setFullState(booleanToShort(picturePaneGetters.isFullState()));        
+            picturePaneTable.setReorderMotionType(picturePaneGetters.getReOrderMotionType().toString());
+            picturePaneTable.setAdminEnabled(booleanToShort (picturePaneGetters.isAdminEnabled()));        
+            if (parentPictureFrameTable!=null)
+                picturePaneTable.setParentframeID(parentPictureFrameTable);
+            if (parentPicturePaneTable!=null)
+                picturePaneTable.setParentpaneID(parentPicturePaneTable);            
+    }
+
+    @Override
+    public PictureComponentTable saveComponent(AttachedGettersInt pictureComponentInterface, PicturePaneTable parentPicturePaneTable, boolean isPaneComponent, PictureButtonTable pictureButtonTable) {
+            PictureComponentTable pictureComponentTable=new PictureComponentTable();            
+            setComponentFields(pictureComponentTable, pictureComponentInterface, parentPicturePaneTable, isPaneComponent, pictureButtonTable);                      
+            pictureCompCont.create(pictureComponentTable);                    
+            return pictureComponentTable;
+                
+    }
+
+    private PictureButtonTable saveButton(PicturePaneTable picturePaneTable) {
+        PictureButtonTable pictureButtonTable=new PictureButtonTable();
+        pictureButtonTable.setParentpaneID(picturePaneTable);        
+        pictureButtonCont.create(pictureButtonTable);        
+        return pictureButtonTable;
+    }
+    
+    private void setComponentFields(PictureComponentTable pictureComponentTable, AttachedGettersInt pictureComponentInterface, PicturePaneTable picturePaneTable, boolean isPaneComponent, PictureButtonTable pictureButtonTable)
+    {
+        PictureComponentGettersInt pictureComponentGet=(PictureComponentGettersInt) pictureComponentInterface.getGetters();
+        pictureComponentTable.setAdminEnabled(booleanToShort (pictureComponentGet.isAdminEnabled()));
+        pictureComponentTable.setCurrBaseSizeHeight(pictureComponentGet.getCurrBaseSize().getHeight());
+        pictureComponentTable.setCurrBaseSizeWidth(pictureComponentGet.getCurrBaseSize().getWidth());
+        pictureComponentTable.setCurrbaselocationX(pictureComponentGet.getCurrBaseLocation().getX());
+        pictureComponentTable.setCurrbaselocationY(pictureComponentGet.getCurrBaseLocation().getY());        
+        pictureComponentTable.setDefaultMotionType(pictureComponentGet.getMotionTypeMaps().toString());
+        pictureComponentTable.setIconString(pictureComponentGet.getIconString());
+      //  pictureComponentTable.setImagePath("");
+        pictureComponentTable.setMinHeight(pictureComponentGet.getMinHeight());
+        pictureComponentTable.setMinWidth(pictureComponentGet.getMinWidth());  
+        pictureComponentTable.setMotionRatio(pictureComponentGet.getMotionRatio());
+        pictureComponentTable.setMotiontypemapID(0);
+        pictureComponentTable.setOrigSizeHeight(pictureComponentGet.getOrigSize().getHeight());
+        pictureComponentTable.setOrigSizeWidth(pictureComponentGet.getOrigSize().getWidth());
+        pictureComponentTable.setOriglocationX(pictureComponentGet.getOrigLocation().getX());
+        pictureComponentTable.setOriglocationY(pictureComponentGet.getOrigLocation().getY());
+       // pictureComponentTable.setResizeBorderColor(pictureComponentInterface.getResizeBorderColor().toString());
+        pictureComponentTable.setShown(booleanToShort(pictureComponentGet.isShown()));        
+        //pictureComponentTable.setSizeParentRatioHeight(pictureComponentGet.getSizeParentRatioHeight());
+      //  pictureComponentTable.setSizeParentRatioWidth(pictureComponentGet.getSizeParentRatioWidth());
+        pictureComponentTable.setSizeRatioHeight(pictureComponentGet.getSizeRatioHeight());
+        pictureComponentTable.setSizeRatioWidth(pictureComponentGet.getSizeRatioWidth());
+        pictureComponentTable.setToolTipText(pictureComponentGet.getToolTipText());        
+        pictureComponentTable.setParentpaneID(picturePaneTable);        
+        if (pictureComponentGet.getImage()!=null)
+            {
+            pictureComponentTable.setImageName(pictureComponentGet.getImage().getImageName());        
+            FileOperations.putFile(pictureComponentGet.getImagePath(),EnvironmentParams.REL_PATH_TO_PICT+pictureComponentGet.getImage().getImageName());                            
+            }
+        
+        pictureComponentTable.setIsPaneComponent(booleanToShort(isPaneComponent));
+        pictureComponentTable.setIsButtonComponent(booleanToShort(pictureButtonTable!=null));
+        if (pictureButtonTable!=null)
+            pictureComponentTable.setButtonId(pictureButtonTable);
+        pictureComponentTable.setPosition(pictureComponentGet.getOrder());
+    }
+
+    
+    
+    private short booleanToShort(boolean bln)
+    {
+        return (short) (bln?1:0);
+    }
+    
+    private boolean ShortToBoolean(short shrt)
+    {
+        return (shrt==1?true:false);
+    }
+
+    @Override
+    public List<Object[]> getFrameRecordsLimited()
+{
+    Query query=pictureFrameCont.getEntityManager().createNamedQuery("PictureFrameTable.findAll");
+    List<PictureFrameTable> queryResult=query.getResultList();
+    List<Object[]> resultList=new ArrayList<>();    
+    
+    for (PictureFrameTable pictureFrameTable : queryResult) {
+        Object[] frameTableLimited=new Object[4];            
+        frameTableLimited[0]=pictureFrameTable.getName();
+        frameTableLimited[1]=pictureFrameTable.getFrameSizeWidth();
+        frameTableLimited[2]=pictureFrameTable.getFrameSizeHeight();
+        frameTableLimited[3]=pictureFrameTable.getPicturePaneTableCollection().size();        
+        resultList.add(frameTableLimited);
+    }
+    return resultList;
+        
+}
+    
+
+    
+@Override
+public synchronized PictureFrameInterface loadFrame(String name) throws NonexistentEntityException{
+       PictureFrameTable pictureFrameTable;
+           Query query=getFramesByName(name);
+           if (!query.getResultList().isEmpty()&&!name.isEmpty())
+                {
+               pictureFrameTable=(PictureFrameTable) query.getResultList().get(0);
+               System.out.println("meglett a rekord"+query.getResultList().get(0).toString());
+                    JFrameBaseFormParams params=new JFrameBaseFormParams.BaseFormParamsBuild()
+                            .newInstance()
+                            .width(pictureFrameTable.getFrameSizeWidth())
+                            .height(pictureFrameTable.getFrameSizeHeight())
+                            .x(100)
+                            .y(100)
+                            .title(name)
+                            .adjMaxSize(true)
+                            .toCenter(true)
+                            .build();
+               PictureFrame pictureFrame=FormFactoryV1.createForm(FormTypes.PICTUREFRAME,null,null, params);
+               pictureFrame.setImage(ImageFactoryV1.getImage(DataSourceTypes.DISK, null, pictureFrameTable.getImageName()));               
+                    for (PicturePaneTable picturePaneTable : pictureFrameTable.getPicturePaneTableCollection()) {
+                        loadPane(picturePaneTable, pictureFrame);
+                        }                        
+                notifyObserver(Observer.Action.DB_LOAD_FRAME);            
+//                for (PicturePaneInterface picturePane : pictureFrame.getPicturePanes()) {
+//                       picturePane.showState(true,null);
+//                }
+                }
+           else
+               if (name!=null)
+                    if (!name.isEmpty())
+                        throw new NonexistentEntityException("There is no "+name+" saved layout.");                        
+        return null;
+    }
+
+public void loadPane(PicturePaneTable picturePaneTable, PicturePaneInterface picturePaneParent) {    
+                        PictureComponentTable pictCompTablePane=null;
+                        for (PictureComponentTable pictureComponentTable : picturePaneTable.getPictureComponentTableCollection()) {
+                            if (ShortToBoolean(pictureComponentTable.getIsPaneComponent()))
+                                pictCompTablePane=pictureComponentTable;                                
+                        }
+                        if (pictCompTablePane!=null) 
+                            {                            
+                            PicturePaneInterface picturePane=PictCompFactV1.createPictPane(fillPictCompParams(pictCompTablePane), picturePaneParent, pictCompTablePane.getPosition(),ShortToBoolean(picturePaneTable.getFullState()),false);                                                      
+                            for (PictureButtonTable pictureButtonTable : picturePaneTable.getPictureButtonTableCollection()) {
+                                for (PictureComponentTable pictureComponentTable : pictureButtonTable.getPictureComponentTableCollection()) {
+                                    loadButtonComponent(picturePane, pictureComponentTable);
+                                }
+                            }
+                            for (PicturePaneTable picturePaneTable1 : picturePaneTable.getPicturePaneTableCollection()) {
+                                    loadPane(picturePaneTable1,picturePane);    
+                                    System.out.println("pictpanesub:"+picturePaneTable.toString());
+                            }                                                            
+                            for (PictureComponentTable pictureComponentTable : picturePaneTable.getPictureComponentTableCollection()) {                                        
+                                if (!ShortToBoolean(pictureComponentTable.getIsPaneComponent())&&!ShortToBoolean(pictureComponentTable.getIsButtonComponent()))
+                                        {                                            
+                                            loadComponent(picturePane,pictureComponentTable);                                            
+                                        }        
+                            }  
+                            picturePane.showState(true,null);
+
+                            //picturePane.setVisible();
+                            
+                            
+                            
+                            
+                            
+                           // picturePaneParent.addPictPane(picturePane, 0);
+                            }
+                    }
+
+
+public void loadComponent(PicturePaneInterface picturePane,PictureComponentTable pictureComponentTable) {    
+    PictCompFactV1.createPictComponent(PictCompTypes.PICTURECOMPONENT,fillPictCompParams(pictureComponentTable), picturePane,pictureComponentTable.getPosition(), true);                                                
+}
+
+private void loadButtonComponent(PicturePaneInterface picturePane, PictureComponentTable pictureComponentTable) {    
+//PictCompParams pictCompParams=new PictCompParams(null,pictureComponentTable.getImagePath(),pictureComponentTable.getIconString(), pictureComponentTable.getToolTipText(), pictureComponentTable.getCurrBaseSizeWidth(), pictureComponentTable.getCurrBaseSizeHeight(), pictureComponentTable.getCurrbaselocationX(), pictureComponentTable.getCurrbaselocationY(), MotionTypes.MedumFlowing, motionTypeMapping,menuMouseListener);
+    PictCompFactV1.createPictComponent(PictCompTypes.PICTUREBUTTON,fillPictCompParams(pictureComponentTable), picturePane,pictureComponentTable.getPosition(), true);                                                
+}
+
+
+private PictCompParams fillPictCompParams(PictureComponentTable pictureComponentTable)
+                {
+                    System.out.println("loadpath:"+EnvironmentParams.getProjectPath()+EnvironmentParams.REL_PATH_TO_PICT+pictureComponentTable.getImagePath());
+                 MapFactoryAbs<AnimTypeMap,Object> mapFactory=MapCreatorFactV1.getFactory(MapFactoryTypes.ANIMTYPE_ANIMPARAMS);                
+                 PictCompParams pictCompParams=new PictCompParams.PictCompParamsBuild()
+                .newInstance()
+                .image(ImageFactoryV1.getImage(DataSourceTypes.DISK, null, pictureComponentTable.getImageName()))                         
+                .iconString(pictureComponentTable.getIconString())
+                .toolTipText(pictureComponentTable.getToolTipText())
+                .width(pictureComponentTable.getCurrBaseSizeWidth())
+                .height(pictureComponentTable.getCurrBaseSizeHeight())
+                .x(pictureComponentTable.getCurrbaselocationX())
+                .y(pictureComponentTable.getCurrbaselocationY())
+                .defaultMotionType(MotionTypes.MediumFlowing)
+                .motionTypeMaps(mapFactory.getMapping())
+                .build();     
+                return pictCompParams;
+                }
+
+    
+
+    @Override
+    public List<Observer> getObservers() {
+        return observers;
+    }
+
+    private Query getFramesByName(String name)
+    {
+           Query query=pictureFrameCont.getEntityManager().createNamedQuery("PictureFrameTable.findByName");
+           query.setParameter("name", name);
+           return query;
+        
+    }
+    
+    @Override
+    public synchronized boolean deleteFrame(String name) throws NonexistentEntityException{
+            PictureFrameTable pictureFrameTable=(PictureFrameTable) getFramesByName(name).getResultList().get(0);
+            for (PicturePaneTable picturePaneTable : pictureFrameTable.getPicturePaneTableCollection()) {
+                try {                                    
+                for (PictureComponentTable pictureComponentTable : picturePaneTable.getPictureComponentTableCollection()) {
+                        pictureCompCont.destroy(pictureComponentTable.getComponentID());                
+                }
+                for (PictureButtonTable pictureButtonTable : picturePaneTable.getPictureButtonTableCollection()) {
+                        pictureButtonCont.destroy(pictureButtonTable.getButtonID());                    
+                }                               
+                    picturePaneCont.destroy(picturePaneTable.getPaneID());
+                } catch (IllegalOrphanException ex) {
+                        throw new NonexistentEntityException(name+" related record couldn'T be deleted");
+                }
+            
+        }
+        try {
+            pictureFrameCont.destroy(pictureFrameTable.getFrameID());                                    
+        } catch (NonexistentEntityException ex) {
+             throw new NonexistentEntityException(name+" wasn'T found in DB");            
+        }
+        notifyObserver(Observer.Action.DB_DELETE_FRAME);            
+        return true;
+    }
+
+    
+}
+
+
+
+
