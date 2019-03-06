@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.imageio.ImageIO;
-import util.EnvironmentParams;
+import util.StaticEnvironmentParams;
 import view.NamedImage;
 import view.interfaces.NamedImageInt;
 
@@ -25,7 +25,7 @@ public class ImageOperationsV1{
         BufferedImage imageTemp=null;         
        URL url=null;       
        File file=null;
-       String actualPath=(path==null||path.isEmpty())?EnvironmentParams.getProjectPath()+EnvironmentParams.REL_PATH_TO_PICT+name:path;                  
+       String actualPath=(path==null||path.isEmpty())?StaticEnvironmentParams.getProjectPath()+StaticEnvironmentParams.REL_PATH_TO_PICT+name:path;                  
         try {
             url = new URL(actualPath);
         } catch (MalformedURLException ex) {

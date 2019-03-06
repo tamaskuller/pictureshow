@@ -35,7 +35,7 @@ public class SaveFormV1 extends InputForm{
      private void createForm(PictureFrameInterface parent)
      {
          InputForm saveThis=this;         
-         InputBox input=new InputBox("Please give a unique name to save the layout!", "",20, InputTypes.TEXT, true);
+         InputBox input=new InputBox("Please give a unique name to save the layout!", "",20, InputTypes.TEXT, true,false);
          addInputBox(input, true);
          addController(new JButton("Save"), true, 
                       new ActionListener() {

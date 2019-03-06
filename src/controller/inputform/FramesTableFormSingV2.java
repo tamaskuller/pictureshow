@@ -114,7 +114,7 @@ public class FramesTableFormSingV2 extends InputForm implements Observer {
                             close();
                         }
                     });                                                            
-                    nameInputBox=new InputBox("Name", "", 25, InputTypes.TEXT,true);                        
+                    nameInputBox=new InputBox("Name", "", 25, InputTypes.TEXT,true, false);                        
                     saveButton=new JButton("Save Frame");        
                     this.addInputBox(nameInputBox, true);        
                     this.addController(saveButton, false,new ActionListener() {

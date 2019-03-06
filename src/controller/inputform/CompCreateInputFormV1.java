@@ -29,10 +29,11 @@ public class CompCreateInputFormV1 extends InputForm{
     
     
     public CompCreateInputFormV1(PicturePaneInterface pane, FormTypes type) {
+        
         super(new JFrameBaseFormParams.BaseFormParamsBuild().newInstance()
                                 .title("Create a(n) "+type.toString()+((pane!=null)?" on "+pane.getIconString():""))
-                                .x(100)
-                                .y(100)
+                                .x(pane.getLocation().getX())
+                                .y(pane.getLocation().getY())
                                 .build());                
         createForm(pane, type);
         

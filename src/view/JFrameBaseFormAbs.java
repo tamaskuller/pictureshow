@@ -8,7 +8,7 @@ package view;
 import java.awt.Dimension;
 import java.awt.Point;
 import javax.swing.JFrame;
-import util.EnvironmentParams;
+import util.StaticEnvironmentParams;
 import view.interfaces.AutoShapeFormInt;
 import view.interfaces.PictureFrameInterface;
 import view.recordtypeclasses.JFrameBaseFormParams;
@@ -53,7 +53,7 @@ public abstract class JFrameBaseFormAbs extends JFrame implements AutoShapeFormI
     private Dimension getParentDimension(PictureFrameInterface parentFrame)
     {
         if (parentFrame==null)                 
-            return EnvironmentParams.getScreenDimension();       
+            return StaticEnvironmentParams.getScreenDimension();       
         else
             return parentFrame.getSize();              
     }

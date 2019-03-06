@@ -10,6 +10,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import javax.swing.JFileChooser;
+import util.DynamicEnvironmentParams;
+import util.StaticEnvironmentParams;
 
 /**
  *
@@ -18,6 +20,7 @@ import javax.swing.JFileChooser;
 public class InputBoxAttachFileListener implements MouseListener{
     InputBox parent=null;
     JFileChooser fileChooser=null;    
+    File lastUsedPath;    
     
     public InputBoxAttachFileListener(InputBox parent) {        
         this.parent=parent;
@@ -25,14 +28,33 @@ public class InputBoxAttachFileListener implements MouseListener{
     
     private void openFileDialog(Component component)
     {
-                fileChooser=new JFileChooser();             
+                fileChooser=new JFileChooser();                                  
+                if (getLastPath()!=null)
+                    fileChooser.setCurrentDirectory(getLastPath());
                 if (fileChooser.showOpenDialog(component)==JFileChooser.APPROVE_OPTION)
                 {
-                    File file=fileChooser.getSelectedFile();            
+                    File file=fileChooser.getSelectedFile();    
+                    setLastUsedPath();
                     parent.getText().setText(file.getAbsolutePath());                                      
                 }                                                       
     }
-        
+    
+    private void setLastUsedPath() {
+        lastUsedPath=fileChooser.getCurrentDirectory();
+        DynamicEnvironmentParams.getInstance().setEnvLastUsedPath(fileChooser.getCurrentDirectory());    
+    }
+    
+    private File getLastPath()
+    {
+        File lastPath=null;
+        if (lastUsedPath!=null)
+            lastPath=lastUsedPath;
+        else if (DynamicEnvironmentParams.getInstance().getEnvLastUsedPath()!=null)
+                lastPath=DynamicEnvironmentParams.getInstance().getEnvLastUsedPath();
+        return lastPath;
+    }
+    
+    
     
     @Override
     public void mouseClicked(MouseEvent e) {        
@@ -58,4 +80,5 @@ public class InputBoxAttachFileListener implements MouseListener{
     public void mouseExited(MouseEvent e) {
     }
 
+    
 }

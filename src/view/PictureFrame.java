@@ -16,6 +16,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -118,7 +119,7 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
             @Override
             public void windowOpened(WindowEvent e) {                
                 super.windowOpened(e); //To change body of generated methods, choose Tools | Templates.                
-                updateSizeLocation();
+                updateSizeLocation();                
             }
             
         });
@@ -137,8 +138,10 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
             add(comp);    
             JLayeredPane layeredPane=getLayeredPane();                
             //component.setLocation(x, y);
-            layeredPane.add(comp,  -1);                                
+//            setCompOrder(component, order);
+            layeredPane.add(comp,  -1);                                           
             layeredPane.setLayer(comp, order);   
+            setCompOrder(component, order);                
             repaint();
             //showHideComponent(component, null,true,true, false, getComponentZOrder(component));            
             }
@@ -166,33 +169,27 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
     
     
    @Override
-    public synchronized boolean adminSwitched()
+    public boolean adminSwitched()
     {           
-                setAdminEnabled(!adminEnabled);
-                adminSwitch=true;                                       
-                
-//                if (!isFullState())                        
-//                        setFullState(true, null);                                                             
-//                else
-                update(Action.ADMIN_DISABLED);
-                updateSizeLocation();
-               return isAdminEnabled();
+        setAdminEnabled(!adminEnabled);
+        adminSwitch=true;                                                       
+        update(Action.ADMIN_DISABLED);
+        updateSizeLocation();
+       return isAdminEnabled();
     }
     
    @Override
-    public boolean hideShowClicked() {                 
-            setFullState(!fullState, MotionTypes.Simple, true);
-            return fullState;                                  
+    public void hideShowSwitch() {                 
+            setFullState(!isFullState(), null, true);                                   
     }
         
     
 
     
     @Override
-    public void showHideComponents(boolean show, boolean forced, MotionTypes motionType) {
-        
+    public void showHideComponents(boolean show, boolean forced, MotionTypes motionType) {        
         for (Component component : this.getLayeredPane().getComponents()) {                
-                showHideComponent(component, null, show, forced, getComponentZOrder(component));            
+                showHideComponent(component, motionType, show, forced, getComponentZOrder(component));            
         }
     }
 
@@ -200,7 +197,7 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
     public void showHideComponent(Object component ,MotionTypes motionType, boolean show, boolean forced,  int order) {     
         for (PicturePaneInterface picturePane : picturePanes) {
                         if (component==picturePane)
-                            picturePane.setFullState(show,null, true);                        
+                            picturePane.setFullState(show,motionType, true);                        
         }
     }
     
@@ -212,7 +209,7 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
         for (PicturePaneInterface picturePane : picturePanes) {            
             picturePane.updateSizeLocation();           
         }
-        repaint();
+        //repaint();
     }
     
        
@@ -225,17 +222,20 @@ private void calcSizeRatios()
 
     @Override
     public void setCompOrder(Object component, int order) {
-
+        if (component instanceof Component)                        
+            getLayeredPane().setComponentZOrder((Component) component, order);
+        Collections.sort(picturePanes);            
     }
-
     
 
     @Override
-    public synchronized void setFullState(boolean fullState, MotionTypes motionType, boolean checkMin) {
+    public void setFullState(boolean fullState, MotionTypes motionType, boolean checkMin) {
         this.prevFullState=this.fullState;
         this.fullState=fullState;
         showHideComponents(fullState, true, motionType);
     }
+        
+    
 
    @Override
     public boolean isFullState() {
@@ -259,7 +259,8 @@ private void calcSizeRatios()
     }
 
     @Override
-    public void update(Action action) {        
+    public void update(Action action) {   
+        System.out.println("updateFrame"+firstShow+isUnderConst());
         if (adminSwitch&&!isUnderConst()&&action==Action.ADMIN_DISABLED)
             {               
             if (adminEnabled)
@@ -270,10 +271,13 @@ private void calcSizeRatios()
             adminSwitch=false;
             }        
         if (!isUnderConst()&&action==Action.UNDERCONST_READY&&mainForm&&firstShow)               
-            {
+            {            
             FormFactoryV1.createForm(FormTypes.INSTRUCTION_FORM, null, this, null);            
             firstShow=false;
             }
+       // if (action==Action.DB_LOAD_FRAME)
+          //  showState(true, null);
+            
     }
     
     
@@ -295,8 +299,9 @@ private void calcSizeRatios()
 
     @Override
     public int getComponentOrder(Object component) {
+        System.out.println("getcomporderonFrame:"+getLayeredPane().getComponentZOrder((Component) component));
         if (component instanceof Component)
-            return getComponentZOrder((Component) component);                    
+            return getLayeredPane().getComponentZOrder((Component) component);                    
         return 0;
     }
 
@@ -337,19 +342,20 @@ private class PictContentPane extends Container{
     
     @Override
     public void onClick(Object component) {
-        if (isAdminEnabled())            
-            activateComponent(component,null);
-        
+       // if (isAdminEnabled())            
+            activateComponent(component,null);        
     }
 
     @Override
     public void activateComponent(Object component,MotionTypes motionType)
     {      
-        if (component instanceof Component)
-            getLayeredPane().setComponentZOrder((Component) component, 0);
-        repaint();
+        if (component instanceof Component)            
+            {
+            setCompOrder(component, 0);
+            repaint();
+            }
     }
-
+    
     
     @Override
     public Dimension getSize() {
@@ -358,8 +364,7 @@ private class PictContentPane extends Container{
 
     
     @Override
-    public void setSize(Dimension d) {        
-        //currBaseSize=d;
+    public void setSize(Dimension d) {              
         getContentPane().setSize(d);        
         Dimension adjSize=new Dimension();
         adjSize.setSize(d.getWidth()*sizeRatioContPaneWidth, d.getHeight()*sizeRatioContPaneHeight);        
@@ -469,7 +474,10 @@ private class PictContentPane extends Container{
 
     @Override
     public void showState(boolean forced, MotionTypes motionType) {
-        setVisible(true);
+        for (PicturePaneInterface picturePane : picturePanes) {
+            picturePane.showState(forced, motionType);
+            //picturePane.setFullState(picturePane.isFullState(), motionType, true);
+        }
     }
 
    @Override
@@ -607,5 +615,15 @@ private class PictContentPane extends Container{
         this.mainForm = mainForm;
     }
     
+        @Override
+    public void minimize() {
+        setInVisible();                
+    }
+
+    @Override
+    public void maximize() {
+        setVisible();
+    }
+
     
 }

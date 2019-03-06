@@ -41,17 +41,17 @@ public final class InputFormMappingBuildVer1 extends MapFactoryAbs<InputFormPara
                     .build();
             else
             map=new InputFormParamsMap.Builder().newInstance()
-                    .addMapping(new Entry(CompParams.class.getField("title"),new InputBox("Title:", "",20, InputTypes.TEXT,true)))
-                    .addMapping(new Entry(CompParams.class.getField("width"),new InputBox("Width:",  "",20, InputTypes.NUMBER,true)))
-                    .addMapping(new Entry(CompParams.class.getField("height"),new InputBox("Height:", "",20, InputTypes.NUMBER,true)))
+                    .addMapping(new Entry(CompParams.class.getField("title"),new InputBox("Title:", "",20, InputTypes.TEXT,true,false)))
+                    .addMapping(new Entry(CompParams.class.getField("width"),new InputBox("Width:",  "",20, InputTypes.NUMBER,true,false)))
+                    .addMapping(new Entry(CompParams.class.getField("height"),new InputBox("Height:", "",20, InputTypes.NUMBER,true,false)))
                     .build();                        
             switch (type)
             {case INPUTFORM_PANE:
             case INPUTFORM_PICT:
-                map.put(new Entry(CompParams.class.getField("x"),new InputBox("X position:",  "",20, InputTypes.NUMBER,false)));
-                map.put(new Entry(CompParams.class.getField("y"),new InputBox("Y position:", "",20, InputTypes.NUMBER,false)));                                                                                                      
+                map.put(new Entry(CompParams.class.getField("x"),new InputBox("X position:",  "",20, InputTypes.NUMBER,false,false)));
+                map.put(new Entry(CompParams.class.getField("y"),new InputBox("Y position:", "",20, InputTypes.NUMBER,false,false)));                                                                                                      
             case INPUTFORM_BACKPICT:
-                map.put(new Entry(CompParams.class.getField("imagePath"),new InputBox("Path to the image you want to add:", "",20, InputTypes.PATH,mandatoryImage)));                
+                map.put(new Entry(CompParams.class.getField("imagePath"),new InputBox("Path to the image you want to add:", "",20, InputTypes.PATH,mandatoryImage,true)));                
                 break;
             }                
         } catch (NoSuchFieldException ex) {

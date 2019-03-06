@@ -126,7 +126,7 @@ public class InputFormListener implements ActionListener {
                 .iconString(compParams.title)
                 .imagePath(compParams.imagePath)
                 .build();                
-        pictCompParams.defaultMotionType = MotionTypes.MediumFlowing;
+        pictCompParams.defaultMotionType = MotionTypes.MEDIUM_FLOWING;
         pictCompParams.adminEnabled = parentPane.isAdminEnabled();
         MapFactoryAbs<AnimTypeMap, Object> mapFactory = MapCreatorFactV1.getFactory(MapFactoryTypes.ANIMTYPE_ANIMPARAMS);
         pictCompParams.motionTypeMaps = mapFactory.getMapping();

@@ -24,7 +24,7 @@ public class FileOperations {
     private static URL url=null;  
     private static File fileFrom=null;
     private static OutputStream outputStream=null;        
-    private static FileInputStream fileInputStream=null;        
+    private static FileInputStream fileInputStream=null;            
         
     
     public static boolean putFile(String fromPath,String toPath)
@@ -33,12 +33,13 @@ public class FileOperations {
                 if (!fromPath.isEmpty())
                 {
                     System.out.println("putfile:"+fromPath+"->"+toPath);
-                    if (EnvironmentParams.appHostType==AppHostType.LOCAL)
+                    if (StaticEnvironmentParams.appHostType==AppHostType.LOCAL)
                     {
                         FileOutputStream fileOutputStream=null;
-                        File fileTo=new File(EnvironmentParams.getProjectPath()+toPath);                                        
+                        File fileTo=new File(StaticEnvironmentParams.getProjectPath()+toPath);                                        
+                        System.out.println("putlocalfile:"+fileTo.getAbsolutePath());
                         fileFrom=new File(fromPath);    
-                        if (fileTo.exists())
+                        if (!fileTo.exists())
                         {
                             try {                        
                                 fileOutputStream=new FileOutputStream(fileTo);
@@ -50,7 +51,7 @@ public class FileOperations {
                             } catch (FileNotFoundException ex) {
                                 System.out.println("Input file couldn't be found "+fileFrom);
                             }                     
-                        copyData(fileInputStream, fileOutputStream);
+                            copyData(fileInputStream, fileOutputStream);
                         }
                         }
                     else
@@ -62,7 +63,7 @@ public class FileOperations {
     public static boolean putFileToFtp(String fromPath,String toPath)
     {
         
-        String ftpUrl=EnvironmentParams.getFtpUrl(toPath);
+        String ftpUrl=StaticEnvironmentParams.getFtpUrl(toPath);
         URLConnection uRLConnection=null;
         //HttpURLConnection.                
         try {
@@ -109,8 +110,7 @@ public class FileOperations {
 
  private static void copyData(InputStream inputStream, OutputStream outputStream)
  {
-     try {                
-                
+     try {                                
                 int length;
                 byte[] buffer=new byte[4096];
                 while ((length = inputStream.read(buffer)) > 0) {

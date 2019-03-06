@@ -16,7 +16,7 @@ public interface AutoShapeCompGettersInt {
     public Dimension getCurrBaseSize();      
     public Dimension getSize(); 
     public Point getCurrBaseLocation();  
- 
-    
+    public Point getLocation(); 
+        
     
 }

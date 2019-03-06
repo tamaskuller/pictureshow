@@ -6,11 +6,19 @@
 package view.inputForm;
 
 import enums.InputTypes;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.LayoutManager;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 
 /**
@@ -21,20 +29,30 @@ public class InputBox extends JPanel{
     protected JLabel label;
     protected JTextField text;
     protected InputTypes inputType;
+    private BoxLayout bLayout;    
     protected boolean mandatory;
+    protected boolean inputUnderNeath=false;
     protected final int ADD_GAP=5;
 
-    public InputBox(String label, String text, int length, InputTypes inputType, boolean mandatory) {        
+    public InputBox(String label, String text, int length, InputTypes inputType, boolean mandatory, boolean inputUnderNeath) {        
         this.label = new JLabel(label);        
         this.text = new JTextField(text, length);
         this.inputType = inputType;
         this.mandatory=mandatory;
+        this.inputUnderNeath=inputUnderNeath;
+        bLayout=new BoxLayout(this, (inputUnderNeath)?BoxLayout.Y_AXIS:BoxLayout.X_AXIS);
+        setLayout(bLayout);        
         //setBorder(BorderFactory.createLineBorder(Color.yellow));
-        add(this.label);
-        this.label.setLocation(0, 0);
-        add(this.text);
-        this.text.setLocation(ADD_GAP+this.label.getWidth()+ADD_GAP,this.label.getY());        
+        init();
+
+    }
         
+    private synchronized void init() {
+        add(this.label);
+        int xGap=(bLayout.getAxis()==BoxLayout.X_AXIS)?ADD_GAP:0;
+        int yGap=(bLayout.getAxis()==BoxLayout.Y_AXIS)?ADD_GAP:0;
+        add(Box.createRigidArea(new Dimension(xGap,yGap)));
+        add(this.text);
         this.text.addKeyListener(new KeyAdapter() {            
             @Override
             public void keyTyped(KeyEvent e) {
@@ -49,7 +67,7 @@ public class InputBox extends JPanel{
                 this.text.addMouseListener(new InputBoxAttachFileListener(this));                
 
     }
-        
+    
     
     public JLabel getLabel() {
         return label;
@@ -62,9 +80,6 @@ public class InputBox extends JPanel{
     public InputTypes getInputType() {
         return inputType;
     }
-
-    
-    
 
     public boolean isMandatory() {
         return mandatory;
@@ -92,10 +107,8 @@ public class InputBox extends JPanel{
     
     private boolean isNumber(char kChar)
     {
-        
-        
         try {           
-            int number=Integer.parseInt(Character.toString(kChar));
+           Integer.parseInt(Character.toString(kChar));
         }
         catch (NumberFormatException e)
                 {
@@ -109,6 +122,8 @@ public class InputBox extends JPanel{
         super.setEnabled(enabled); //To change body of generated methods, choose Tools | Templates.
         text.setEnabled(enabled);
     }
+
+    
     
     
     

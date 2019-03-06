@@ -42,7 +42,7 @@ public class FramesTableFormSaveV1 extends FramesTableFormSingV1 implements Obse
     
     public void init()
     {       
-    nameInputbox=new InputBox("Name", parent.getIconString(), 25, InputTypes.TEXT,true);    
+    nameInputbox=new InputBox("Name", parent.getIconString(), 25, InputTypes.TEXT,true,false);    
     saveButton=new JButton("Save Frame");
     this.addInputBox(nameInputbox, true);
     this.addController(saveButton, false,new ActionListener() {

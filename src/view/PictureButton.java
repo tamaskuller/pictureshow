@@ -8,6 +8,7 @@ package view;
 import java.awt.Color;
 import java.awt.Graphics;
 import javax.swing.BorderFactory;
+import view.enums.MotionTypes;
 import view.interfaces.PicturePaneInterface;
 import view.recordtypeclasses.PictCompParams;
 
@@ -23,7 +24,7 @@ public class PictureButton extends PictureComponent {
     public PictureButton(PicturePaneInterface parentPane,PictCompParams params ) {        
         super(parentPane,params);        
         minWidthMultiplier=0.05;
-        minHeightMultiplier=0.05;
+        minHeightMultiplier=0.05;       
         
     }
        
@@ -49,6 +50,14 @@ public class PictureButton extends PictureComponent {
         currentButtonColor=BUTTON_COLOR;
         super.mouseExited(); //To change body of generated methods, choose Tools | Templates.        
         
+    }
+    
+    @Override
+    protected void setMinDimensions(boolean checkMin, boolean adjLocation) {
+        super.setMinDimensions(checkMin, adjLocation);
+        double min=(minHeight>minWidth)?minWidth:minHeight;
+        minWidth=min;
+        minHeight=min;
     }
 
    

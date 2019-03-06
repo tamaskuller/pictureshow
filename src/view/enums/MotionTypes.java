@@ -10,5 +10,5 @@ package view.enums;
  * @author Kuller Tamas
  */
 public enum MotionTypes {
-    Simple, SlowFlowing, MediumFlowing,FastFlowing, No, Fastest;
+    SIMPLE, SLOW_FLOWING, MEDIUM_FLOWING,FAST_FLOWING, NO_FLOW, FASTEST_FLOWING;
 }

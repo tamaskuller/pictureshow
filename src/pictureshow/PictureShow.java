@@ -10,39 +10,23 @@ import controller.DB.exceptions.NonexistentEntityException;
 import enums.DataSourceTypes;
 import view.enums.FormTypes;
 import view.enums.PictCompTypes;
-import view.PictureFrame;
-import view.PicturePane;
 import view.enums.MotionTypes;
-import java.awt.Component;
-import java.awt.Image;
-import java.lang.reflect.InvocationTargetException;
-import javax.swing.SwingUtilities;
 import model.ImageFactoryV1;
-import view.listeners.CompListenerBuildSingVer1;
-import controller.maps.AnimTypeMapBuildVer1;
 import view.FormFactoryV1;
-import view.JFrameBaseFormAbs;
-import controller.menu.MenuBuildV1;
 import controller.maps.AnimTypeMap;
-import controller.menu.MenuMouseListenerBuildV1;
 import enums.MapFactoryTypes;
 import controller.maps.MapCreatorFactV1;
 import controller.maps.MapFactoryAbs;
-import java.awt.Toolkit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import util.AppHostType;
-import util.EnvironmentParams;
+import util.StaticEnvironmentParams;
 import view.PictCompFactV1;
-import view.PictureFrameGet;
-import view.adapter.AdaptPictJComponent;
 import view.interfaces.NamedImageInt;
 import view.interfaces.PictureFrameInterface;
 import view.interfaces.PicturePaneInterface;
 import view.recordtypeclasses.PictCompParams;
-import view.recordtypeclasses.PictCompParams.PictCompParamsBuild;
 import view.recordtypeclasses.JFrameBaseFormParams;
+import view.util.Observer;
 
 /**
  *
@@ -63,14 +47,12 @@ public class PictureShow {
      */
     public static void main(String[] args) {
         
-        EnvironmentParams.getProjectPath();
+        StaticEnvironmentParams.getProjectPath();
         JFrameBaseFormParams params=new JFrameBaseFormParams.BaseFormParamsBuild()
                 .newInstance()
-                .width(700)
-                .height(700)
-                .x(0)
-                .y(0)
-                .title("Képek")
+                .width(1000)
+                .height(700)              
+                .title("Pictures")
                 .toCenter(true)
                 .adjMaxSize(false)
                 .build();
@@ -80,7 +62,7 @@ public class PictureShow {
         if (args.length>0)                  
             try{
             AppHostType.valueOf(args[0]);
-            EnvironmentParams.appHostType=AppHostType.valueOf(args[0]);        
+            StaticEnvironmentParams.appHostType=AppHostType.valueOf(args[0]);        
             } catch (IllegalArgumentException ex)
                     {
                         System.out.println("Not supported AppHostType - "+message);
@@ -96,7 +78,10 @@ public class PictureShow {
                 JOptionPane.showMessageDialog(null, ex.getMessage());                
                 }                
         if (!frameLoaded)
-            pictureFrame=FormFactoryV1.createForm(FormTypes.PICTUREFRAME,null,null,params);                                      
+            {
+            pictureFrame=FormFactoryV1.createForm(FormTypes.PICTUREFRAME,null,null,params);                                                  
+            pictureFrame.update(Observer.Action.UNDERCONST_READY);
+            }
         else
         if (!frameLoaded)
             {
@@ -123,7 +108,7 @@ public class PictureShow {
                     .height(400)
                     .x(50)
                     .y(100)
-                    .defaultMotionType(MotionTypes.FastFlowing)
+                    .defaultMotionType(MotionTypes.FAST_FLOWING)
                     .motionTypeMaps(mapFactory.getMapping())
                     .build();                               
             picturePane=PictCompFactV1.createPictPane(pictParams,pictureFrame,0,true,true);                        
@@ -138,7 +123,7 @@ public class PictureShow {
                     .height(300)
                     .x(50)
                     .y(50)
-                    .defaultMotionType(MotionTypes.SlowFlowing)
+                    .defaultMotionType(MotionTypes.SLOW_FLOWING)
                     .motionTypeMaps(mapFactory.getMapping())
                     .build();                                               
            // PictCompFactV1.createPictComponent(PictCompTypes.PICTURECOMPONENT,pictParams,picturePane,0,false);
@@ -152,7 +137,7 @@ public class PictureShow {
                     .height(200)
                     .x(70)
                     .y(70)
-                    .defaultMotionType(MotionTypes.Simple)
+                    .defaultMotionType(MotionTypes.SIMPLE)
                     .motionTypeMaps(mapFactory.getMapping())
                     .build();                                                       
         //    PictCompFactV1.createPictComponent(PictCompTypes.PICTURECOMPONENT,pictParams,picturePane,0,false);
@@ -166,7 +151,7 @@ public class PictureShow {
                     .height(800)
                     .x(100)
                     .y(100)
-                    .defaultMotionType(MotionTypes.SlowFlowing)
+                    .defaultMotionType(MotionTypes.SLOW_FLOWING)
                     .motionTypeMaps(mapFactory.getMapping())
                     .build();                                                               
          //   PictCompFactV1.createPictComponent(PictCompTypes.PICTURECOMPONENT,pictParams,picturePane,3,false);        
@@ -180,7 +165,7 @@ public class PictureShow {
                     .height(350)
                     .x(150)
                     .y(150)
-                    .defaultMotionType(MotionTypes.SlowFlowing)
+                    .defaultMotionType(MotionTypes.SLOW_FLOWING)
                     .motionTypeMaps(mapFactory.getMapping())                
                     .build();                                                                       
             picturePane2=PictCompFactV1.createPictPane(pictParams,picturePane,0,false,true);
@@ -194,7 +179,7 @@ public class PictureShow {
                     .height(250)
                     .x(0)
                     .y(0)
-                    .defaultMotionType(MotionTypes.SlowFlowing)
+                    .defaultMotionType(MotionTypes.SLOW_FLOWING)
                     .motionTypeMaps(mapFactory.getMapping())                
                     .build();                                                                       
             PictCompFactV1.createPictComponent(PictCompTypes.PICTURECOMPONENT,pictParams,picturePane2,0,false);                         
@@ -208,7 +193,7 @@ public class PictureShow {
                     .height(400)
                     .x(50)
                     .y(50)
-                    .defaultMotionType(MotionTypes.SlowFlowing)
+                    .defaultMotionType(MotionTypes.SLOW_FLOWING)
                     .motionTypeMaps(mapFactory.getMapping())                
                     .build();                                                                       
             PictCompFactV1.createPictComponent(PictCompTypes.PICTURECOMPONENT,pictParams,picturePane2,0,false);   
@@ -222,7 +207,7 @@ public class PictureShow {
                     .height(600)
                     .x(0)
                     .y(0)
-                    .defaultMotionType(MotionTypes.FastFlowing)
+                    .defaultMotionType(MotionTypes.FAST_FLOWING)
                     .motionTypeMaps(mapFactory.getMapping())
                     .build();                
          //   picturePaneBase=PictCompFactV1.createPictPane(pictParams,pictureFrame,0,false,true);                
@@ -237,7 +222,7 @@ public class PictureShow {
                     .height(800)
                     .x(0)
                     .y(0)
-                    .defaultMotionType(MotionTypes.SlowFlowing)
+                    .defaultMotionType(MotionTypes.SLOW_FLOWING)
                     .motionTypeMaps(mapFactory.getMapping())
                     .build();                        
          //   PictCompFactV1.createPictComponent(PictCompTypes.PICTURECOMPONENT,pictParams,picturePaneBase,0,false);   

@@ -76,13 +76,15 @@ public final class PictCompFactV1 {
                 .height(20)
                 .x(0)
                 .y(0)
-                .defaultMotionType(MotionTypes.FastFlowing)
+                .defaultMotionType(MotionTypes.FASTEST_FLOWING)
                 .motionTypeMaps(mapFactory.getMapping())
                 .adminEnabled(picturePane.isAdminEnabled())
-                .build();                        
+                .build();        
         if (button)
             PictCompFactV1.createPictComponent(PictCompTypes.PICTUREBUTTON,pictParams,picturePane,0,false);                                        
         parent.addPictPane(picturePane, order);      
+       // picturePane.setVisible();        
+       // picturePane.setFullState(fullState, null, true);
         return picturePane;
     }
     

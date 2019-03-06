@@ -51,7 +51,7 @@ public class PictureComponent extends AdaptPictJComponent{
     protected NamedImageInt image=null;    
     protected String imagePath=null;    
     
-    protected MotionTypes adminMotionType=MotionTypes.Simple;
+    protected MotionTypes adminMotionType=MotionTypes.SIMPLE;
     protected MotionTypes defaultMotionType;
     protected MapInterface<MotionTypes,AnimParams> motionTypeMaps;    
     
@@ -109,7 +109,7 @@ public class PictureComponent extends AdaptPictJComponent{
         this.currBaseSize.setSize(params.getWidth(), params.getHeight());
         this.adminEnabled=params.adminEnabled;
         this.origSize=currBaseSize;                
-        this.setVisible(true);             
+        //this.setVisible(true);             
         this.paintRequests=new ArrayList<>();                       
         System.out.println("OrigWidth:"+currBaseSize.getWidth());        
 
@@ -144,9 +144,10 @@ public class PictureComponent extends AdaptPictJComponent{
                             }
                            else
                           {
-                               timerPending.stop();
-                               timerPending=null;                                                  
-                               parentPane.update(Observer.Action.UNDERCONST_READY);
+                            timerPending.stop();
+                            timerPending=null;                                                  
+                            parentPane.update(Observer.Action.UNDERCONST_READY_TO_PARENT);
+                           //    update(Observer.Action.UNDERCONST_READY);
                            }
                           };
                         });                        
@@ -192,8 +193,15 @@ public class PictureComponent extends AdaptPictJComponent{
                             timer.start();                                    
                             System.out.println("PICT:"+this.toString());                                                        
         }
+
+    @Override
+    public void update(Action action) {
+        if (action==Action.UNDERCONST_READY)
+            {
+            }
+    }
     
-       
+    
     
     
     @Override    
@@ -217,8 +225,10 @@ public class PictureComponent extends AdaptPictJComponent{
                     currBaseLocation=p;          
         Point adjLocation=getAdjCurrLocation(currBaseLocation);
         super.setLocation(adjLocation); //To change body of generated methods, choose Tools | Templates.                
-    }    
-        
+    }                
+   
+    
+    
     protected Point getAdjCurrLocation(Point location)
     {            
             //updateParentSizeRatios();
@@ -423,7 +433,8 @@ public class PictureComponent extends AdaptPictJComponent{
 
     @Override
     public void onClick() {
-        parentPane.onClick(this);
+        if (!isUnderConst()&&!parentPane.isUnderConst())
+            parentPane.onClick(this);
     }
     
     @Override

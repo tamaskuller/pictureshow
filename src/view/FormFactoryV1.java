@@ -89,22 +89,23 @@ static int onClose;
                     {
                     mainForm=pictureFrame;
                     pictureFrame.setMainForm(true);
-                    onClose=WindowConstants.EXIT_ON_CLOSE;
+                    form.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);   
                     System.out.println("mainformCreated");   
                     PictDBActionsV1.getInstance().addObserver(mainForm);
-                   // pictureFrame.setLocToCenter();                    
                     }                
                 break;
         }
-     if (form!=null)                      
-         SwingUtilities.invokeLater(new Runnable (){                    
+     if (form!=null)
+        {
+        if (form!=mainForm)            
+            form.setDefaultCloseOperation(onClose);                         
+        SwingUtilities.invokeLater(new Runnable (){                    
                     public void run() {
                         form.setVisible(true);                        
-                        System.out.println("formstarted");                    
-                        form.setDefaultCloseOperation(onClose);                         
-                            
+                        System.out.println("formstarted");                                            
                     }
                 });                 
+        }
      return (F) form;          
      }                               
 

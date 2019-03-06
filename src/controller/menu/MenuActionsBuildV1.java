@@ -87,7 +87,7 @@ public class MenuActionsBuildV1 implements MenuActionsInt{
             listener=new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pictureFrame.adminSwitched();                                
+                pictureFrame.adminSwitched();                                                
                 }
             };
             break;        
@@ -95,7 +95,7 @@ public class MenuActionsBuildV1 implements MenuActionsInt{
             listener=new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pictureFrame.setFullState(!pictureFrame.isFullState(), MotionTypes.Simple,true);
+                pictureFrame.hideShowSwitch();                
                 }
             };
             break;
@@ -184,6 +184,7 @@ public class MenuActionsBuildV1 implements MenuActionsInt{
             @Override
             public void menuCanceled(MenuEvent e) {
             }
+            
         };
         return listener;
     }        
@@ -223,8 +224,10 @@ public class MenuActionsBuildV1 implements MenuActionsInt{
             if (popupMenu.getInvoker() instanceof PictureFrameInterface)
                 parentFrame=(PictureFrameInterface) parent;            
             switch (mapItemEntry.getKey())
-                {case ADMIN:pos=(adminEnabled)?0:1;  
-                break;
+                {case ADMIN:
+                    visibleMenuItem=!pictureFrame.isUnderConst();                
+                    pos=(adminEnabled)?0:1;  
+                    break;
                 case ALLHIDE: pos=(pictureFrame.isFullState())?0:1;            
                 break;                
                 case ADD_PANE:
@@ -252,21 +255,19 @@ public class MenuActionsBuildV1 implements MenuActionsInt{
     
     public void buildPopupListener()
     {
-        popupMenu.addPopupMenuListener(new PopupMenuListener() {
+        popupMenu.addPopupMenuListener(new PopupMenuListener() {            
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
                 //setMenuItems();                  
             }
 
             @Override
-            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-                
-             CompListenerBuildSingVer1.getInstance().setMouseReleased(true);
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {                
+                CompListenerBuildSingVer1.getInstance().setMouseReleased(true);
             }
 
             @Override
-            public void popupMenuCanceled(PopupMenuEvent e) {
-           
+            public void popupMenuCanceled(PopupMenuEvent e) {           
             }
         });
     }

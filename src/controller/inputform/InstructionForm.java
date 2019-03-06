@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import util.AppHostType;
-import util.EnvironmentParams;
+import util.StaticEnvironmentParams;
 import view.JFrameBaseFormAbs;
 import view.interfaces.PictureFrameInterface;
 import view.recordtypeclasses.JFrameBaseFormParams;
@@ -52,12 +52,12 @@ public class InstructionForm extends JFrameBaseFormAbs{
         try {
             //JTextArea jTextArea=new JTextArea();
             //JScrollPane jScrollPane = new JScrollPane(jTextArea);
-            System.out.println("HTMLUrl:"+EnvironmentParams.getProjectPath()+EnvironmentParams.REL_PATH_TO_HTML);
+            System.out.println("HTMLUrl:"+StaticEnvironmentParams.getProjectPath()+StaticEnvironmentParams.REL_PATH_TO_HTML);
             URL url;
-            if (EnvironmentParams.appHostType==AppHostType.LOCAL)                
-                url = new URL("file:///"+EnvironmentParams.getProjectPath()+EnvironmentParams.REL_PATH_TO_HTML);
+            if (StaticEnvironmentParams.appHostType==AppHostType.LOCAL)                
+                url = new URL("file:///"+StaticEnvironmentParams.getProjectPath()+StaticEnvironmentParams.REL_PATH_TO_HTML);
             else
-                url = new URL(EnvironmentParams.getProjectPath()+EnvironmentParams.REL_PATH_TO_HTML);
+                url = new URL(StaticEnvironmentParams.getProjectPath()+StaticEnvironmentParams.REL_PATH_TO_HTML);
             jTextArea=new JEditorPane(url);
             JScrollPane jScrollPane=new JScrollPane(jTextArea);
             add(jScrollPane);
@@ -75,7 +75,7 @@ public class InstructionForm extends JFrameBaseFormAbs{
         //setLocation(getLocation().x+((int) (getWidth()*0.2)),getLocation().y-((int) (getHeight()*0.2)));
         Dimension parentSize=parent.getSize();
         Dimension currSize=getSize();
-        Point parentLocation=parent.getCurrBaseLocation();
+        Point parentLocation=parent.getLocation();
         Point currLocation=getLocation();
         currLocation.setLocation(parentLocation.getX()+parentSize.getWidth()*INDENT, parentLocation.getY()+parentSize.getHeight()*INDENT);
         currSize.setSize(parentSize.getWidth()*(1-INDENT), parentSize.getHeight()*(1-INDENT));

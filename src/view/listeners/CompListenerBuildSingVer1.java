@@ -65,7 +65,7 @@ public final class CompListenerBuildSingVer1 extends ListenerBuildAbs {
                 //notifyObserver(action,method,copy , observerList);                                   
                 System.out.println("CLICKED");
                 
-            }
+            }                        
 
             @Override
             public void mousePressed(MouseEvent e) {

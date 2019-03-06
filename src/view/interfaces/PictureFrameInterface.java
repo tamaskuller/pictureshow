@@ -14,7 +14,7 @@ import view.util.Subject;
  * @author Tamas Kuller
  */
 public interface PictureFrameInterface extends PicturePaneInterface,AdministratableInt, MultiComponentInt,MultiComponentGetterInt,AttachedGettersInt<Object>, Subject, Observer, AutoShapeFormInt {    
-    public boolean hideShowClicked();
+//    public boolean hideShowClicked();
     public void setTitle(String title);
     public List<PicturePaneInterface> getPicturePanes();   
     public boolean isActivated();

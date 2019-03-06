@@ -17,7 +17,7 @@ import pictureshow.PictureShow;
  *
  * @author Tamas Kuller
  */
-public final class EnvironmentParams {
+public final class StaticEnvironmentParams {
     public final static String REL_PATH_TO_PICT="/pictures/";
     public final static String REL_PATH_TO_HTML="/Webpages/Instructions.html";    
     public static AppHostType appHostType=AppHostType.LOCAL;
@@ -26,6 +26,7 @@ public final class EnvironmentParams {
     public static String host = "ftp.uw.hu:21/pictureshow";
     public static String user = "tamaskuller";
     public static String pass = "1aa0b891";
+    
         
             
     public static String getProjectPath()
@@ -65,6 +66,10 @@ public final class EnvironmentParams {
     {
         return Toolkit.getDefaultToolkit().getScreenSize();
     }
+ 
+
+    
+    
     
     
 }

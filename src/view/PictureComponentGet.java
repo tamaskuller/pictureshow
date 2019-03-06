@@ -119,6 +119,13 @@ public class PictureComponentGet implements PictureComponentGettersInt, AutoShap
     }
 
     @Override
+    public Point getLocation() {
+        return pictureComponent.getLocation();
+    }
+    
+    
+
+    @Override
     public boolean isAdminEnabled() {
         return pictureComponent.adminEnabled;
     }

@@ -7,12 +7,13 @@ package view.interfaces;
 
 import java.awt.Color;
 import view.recordtypeclasses.PaintRequestParams;
+import view.util.Observer;
 
 /**
  *
  * @author Kuller Tamas
  */
-public interface PictureComponentInterface extends AutoShapeComponentInt,AutoShapeCompResizeableInt,ActiveComponentInt, AdministratableInt, AttachedGettersInt<Object>, ImageInt<NamedImageInt>,MenuInterface, Comparable<PictureComponentInterface> {
+public interface PictureComponentInterface extends AutoShapeComponentInt,AutoShapeCompResizeableInt,ActiveComponentInt, AdministratableInt, AttachedGettersInt<Object>, ImageInt<NamedImageInt>,MenuInterface, Comparable<PictureComponentInterface>, Observer {
      public void paintPict(PaintRequestParams paintRequest);  
      public PicturePaneInterface getParentPane();
      public Color getResizeBorderColor();   

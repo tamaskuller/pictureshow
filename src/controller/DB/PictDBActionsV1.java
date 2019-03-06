@@ -38,7 +38,7 @@ import enums.DataSourceTypes;
 import java.util.ArrayList;
 import java.util.List;
 import model.ImageFactoryV1;
-import util.EnvironmentParams;
+import util.StaticEnvironmentParams;
 import util.FileOperations;
 import view.interfaces.AttachedGettersInt;
 import view.recordtypeclasses.JFrameBaseFormParams;
@@ -146,7 +146,7 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
             if (pictureFrameGetters.getImage()!=null)
                {       
                 pictureFrameTable.setImageName(pictureFrameGetters.getImage().getImageName());
-                FileOperations.putFile(pictureFrameGetters.getImagePath(),EnvironmentParams.REL_PATH_TO_PICT+pictureFrameGetters.getImage().getImageName());            
+                FileOperations.putFile(pictureFrameGetters.getImagePath(),StaticEnvironmentParams.REL_PATH_TO_PICT+pictureFrameGetters.getImage().getImageName());            
                 }
             //pictureframe.setOldBackGroundColor(pictureFrame.getOldBackGroundColor().toString());
             pictureFrameTable.setSizeRatioContPaneHeight(pictureFrameGetters.getSizeRatioContPaneHeight());
@@ -220,7 +220,7 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
         pictureComponentTable.setCurrBaseSizeWidth(pictureComponentGet.getCurrBaseSize().getWidth());
         pictureComponentTable.setCurrbaselocationX(pictureComponentGet.getCurrBaseLocation().getX());
         pictureComponentTable.setCurrbaselocationY(pictureComponentGet.getCurrBaseLocation().getY());        
-        pictureComponentTable.setDefaultMotionType(pictureComponentGet.getMotionTypeMaps().toString());
+       // pictureComponentTable.setDefaultMotionType(pictureComponentGet.getMotionTypeMaps().toString());
         pictureComponentTable.setIconString(pictureComponentGet.getIconString());
       //  pictureComponentTable.setImagePath("");
         pictureComponentTable.setMinHeight(pictureComponentGet.getMinHeight());
@@ -241,8 +241,9 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
         pictureComponentTable.setParentpaneID(picturePaneTable);        
         if (pictureComponentGet.getImage()!=null)
             {
+                System.out.println("savepictimage"+pictureComponentGet.getImagePath());
             pictureComponentTable.setImageName(pictureComponentGet.getImage().getImageName());        
-            FileOperations.putFile(pictureComponentGet.getImagePath(),EnvironmentParams.REL_PATH_TO_PICT+pictureComponentGet.getImage().getImageName());                            
+            FileOperations.putFile(pictureComponentGet.getImagePath(),StaticEnvironmentParams.REL_PATH_TO_PICT+pictureComponentGet.getImage().getImageName());                            
             }
         
         pictureComponentTable.setIsPaneComponent(booleanToShort(isPaneComponent));
@@ -250,6 +251,7 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
         if (pictureButtonTable!=null)
             pictureComponentTable.setButtonId(pictureButtonTable);
         pictureComponentTable.setPosition(pictureComponentGet.getOrder());
+        System.out.println("savedcomponentorder:"+pictureComponentGet.getOrder()+"-"+pictureComponentGet.getIconString());
     }
 
     
@@ -306,12 +308,10 @@ public synchronized PictureFrameInterface loadFrame(String name) throws Nonexist
                PictureFrame pictureFrame=FormFactoryV1.createForm(FormTypes.PICTUREFRAME,null,null, params);
                pictureFrame.setImage(ImageFactoryV1.getImage(DataSourceTypes.DISK, null, pictureFrameTable.getImageName()));               
                     for (PicturePaneTable picturePaneTable : pictureFrameTable.getPicturePaneTableCollection()) {
-                        loadPane(picturePaneTable, pictureFrame);
+                        loadPane(picturePaneTable, pictureFrame);                        
                         }                        
-                notifyObserver(Observer.Action.DB_LOAD_FRAME);            
-//                for (PicturePaneInterface picturePane : pictureFrame.getPicturePanes()) {
-//                       picturePane.showState(true,null);
-//                }
+                notifyObserver(Observer.Action.DB_LOAD_FRAME); 
+                //pictureFrame.showState(true, null);                
                 }
            else
                if (name!=null)
@@ -328,7 +328,8 @@ public void loadPane(PicturePaneTable picturePaneTable, PicturePaneInterface pic
                         }
                         if (pictCompTablePane!=null) 
                             {                            
-                            PicturePaneInterface picturePane=PictCompFactV1.createPictPane(fillPictCompParams(pictCompTablePane), picturePaneParent, pictCompTablePane.getPosition(),ShortToBoolean(picturePaneTable.getFullState()),false);                                                      
+                            PicturePaneInterface picturePane=PictCompFactV1.createPictPane(fillPictCompParams(PictCompTypes.PICTUREPANE,pictCompTablePane), picturePaneParent, pictCompTablePane.getPosition(),ShortToBoolean(picturePaneTable.getFullState()),false);                                                      
+                                System.out.println("loadpaneposition:"+pictCompTablePane.getPosition()+"-"+picturePane.getIconString());
                             for (PictureButtonTable pictureButtonTable : picturePaneTable.getPictureButtonTableCollection()) {
                                 for (PictureComponentTable pictureComponentTable : pictureButtonTable.getPictureComponentTableCollection()) {
                                     loadButtonComponent(picturePane, pictureComponentTable);
@@ -343,33 +344,25 @@ public void loadPane(PicturePaneTable picturePaneTable, PicturePaneInterface pic
                                         {                                            
                                             loadComponent(picturePane,pictureComponentTable);                                            
                                         }        
-                            }  
-                            picturePane.showState(true,null);
-
-                            //picturePane.setVisible();
-                            
-                            
-                            
-                            
-                            
-                           // picturePaneParent.addPictPane(picturePane, 0);
                             }
+                            picturePane.showState(true, null);
+                            }                        
                     }
 
 
 public void loadComponent(PicturePaneInterface picturePane,PictureComponentTable pictureComponentTable) {    
-    PictCompFactV1.createPictComponent(PictCompTypes.PICTURECOMPONENT,fillPictCompParams(pictureComponentTable), picturePane,pictureComponentTable.getPosition(), true);                                                
+    PictCompFactV1.createPictComponent(PictCompTypes.PICTURECOMPONENT,fillPictCompParams(PictCompTypes.PICTURECOMPONENT,pictureComponentTable), picturePane,pictureComponentTable.getPosition(), true);                                                
 }
 
 private void loadButtonComponent(PicturePaneInterface picturePane, PictureComponentTable pictureComponentTable) {    
 //PictCompParams pictCompParams=new PictCompParams(null,pictureComponentTable.getImagePath(),pictureComponentTable.getIconString(), pictureComponentTable.getToolTipText(), pictureComponentTable.getCurrBaseSizeWidth(), pictureComponentTable.getCurrBaseSizeHeight(), pictureComponentTable.getCurrbaselocationX(), pictureComponentTable.getCurrbaselocationY(), MotionTypes.MedumFlowing, motionTypeMapping,menuMouseListener);
-    PictCompFactV1.createPictComponent(PictCompTypes.PICTUREBUTTON,fillPictCompParams(pictureComponentTable), picturePane,pictureComponentTable.getPosition(), true);                                                
+    PictCompFactV1.createPictComponent(PictCompTypes.PICTUREBUTTON,fillPictCompParams(PictCompTypes.PICTUREBUTTON,pictureComponentTable), picturePane,pictureComponentTable.getPosition(), true);                                                
 }
 
 
-private PictCompParams fillPictCompParams(PictureComponentTable pictureComponentTable)
+private PictCompParams fillPictCompParams(PictCompTypes pictCompType,PictureComponentTable pictureComponentTable)
                 {
-                    System.out.println("loadpath:"+EnvironmentParams.getProjectPath()+EnvironmentParams.REL_PATH_TO_PICT+pictureComponentTable.getImagePath());
+                    System.out.println("loadpath:"+StaticEnvironmentParams.getProjectPath()+StaticEnvironmentParams.REL_PATH_TO_PICT+pictureComponentTable.getImagePath());
                  MapFactoryAbs<AnimTypeMap,Object> mapFactory=MapCreatorFactV1.getFactory(MapFactoryTypes.ANIMTYPE_ANIMPARAMS);                
                  PictCompParams pictCompParams=new PictCompParams.PictCompParamsBuild()
                 .newInstance()
@@ -380,7 +373,7 @@ private PictCompParams fillPictCompParams(PictureComponentTable pictureComponent
                 .height(pictureComponentTable.getCurrBaseSizeHeight())
                 .x(pictureComponentTable.getCurrbaselocationX())
                 .y(pictureComponentTable.getCurrbaselocationY())
-                .defaultMotionType(MotionTypes.MediumFlowing)
+                .defaultMotionType((pictCompType==PictCompTypes.PICTUREBUTTON)?MotionTypes.FASTEST_FLOWING:MotionTypes.MEDIUM_FLOWING)
                 .motionTypeMaps(mapFactory.getMapping())
                 .build();     
                 return pictCompParams;

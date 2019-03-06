@@ -71,15 +71,22 @@ public class PictureFrameGet implements PictureFrameGettersInt{
 
     @Override
     public Dimension getSize() {
-        return pictureFrame.getSize();
+        return pictureFrame.getSize();                
     }
 
     @Override
     public Point getCurrBaseLocation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return pictureFrame.getCurrBaseLocation();
+    }
+
+    @Override
+    public Point getLocation() {
+        return pictureFrame.getLocation();
     }
 
  
+    
+    
 
     @Override
     public boolean isAdminEnabled() {
