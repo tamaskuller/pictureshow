@@ -13,10 +13,10 @@ import view.util.Observer;
  *
  * @author Kuller Tamas
  */
-public interface PictureComponentInterface extends AutoShapeComponentInt,AutoShapeCompResizeableInt,ActiveComponentInt, AdministratableInt, AttachedGettersInt<Object>, ImageInt<NamedImageInt>,MenuInterface, Comparable<PictureComponentInterface>, Observer {
+public interface PictureComponentInterface extends AutoShapeComponentInt,AutoShapeCompResizeableInt,ActiveComponentInt, AdministratableInt, AttachedGettersInt<Object>, ImageInt<NamedImageInt>,MenuInterface, Comparable<PictureComponentInterface> {
      public void paintPict(PaintRequestParams paintRequest);  
      public PicturePaneInterface getParentPane();
-     public Color getResizeBorderColor();   
+     //public Color getResizeBorderColor();   
      public void Delete();
      public String getIconString();
      public void setVisible();

@@ -5,19 +5,18 @@
  */
 package controller.menu;
 
+import view.Menu.JPopupMenuAdj;
 import controller.menu.enums.MenuEnumsV1;
 import controller.menu.enums.MenuItemEnumsV1;
-import controller.menu.MenuBuildStructV1;
 import controller.DB.PictDBActionsV1;
-import controller.menu.MenuActionsBuildV1;
 import javax.swing.JPopupMenu;
-import controller.menu.MenuActionsInt;
 import view.Menu.MenuFlexible;
 import view.Menu.MenuItemFlexible;
 import view.Menu.MenuItemMap;
 import view.interfaces.PictureFrameInterface;
 import util.mapping.MapInterface;
 import controller.DB.PictDBActionsInt;
+import java.awt.Component;
 import view.Menu.MenuMap;
 
 /**
@@ -26,31 +25,27 @@ import view.Menu.MenuMap;
  */
 public class MenuBuildV1 {
     PictureFrameInterface pictureFrame;
-    JPopupMenu popupMenu;
+    JPopupMenuAdj popupMenu;
     MenuFlexible menu;
     MapInterface<MenuItemEnumsV1, MenuItemFlexible> menuItemMap;
     MapInterface<MenuEnumsV1, MenuFlexible> menuMap;
-    PictDBActionsInt pictDBActions;    
-    
-    
+    PictDBActionsInt pictDBActions;            
     
     public MenuBuildV1(PictureFrameInterface pictureFrame) {       
         this.pictureFrame = pictureFrame;
-        popupMenu=new JPopupMenu();       
+        popupMenu=new JPopupMenuAdj();              
         menuItemMap=new MenuItemMap();         
         menuMap=new MenuMap();                
-        synchronized (this){
         MenuActionsInt menuActions=new MenuActionsBuildV1(pictureFrame, popupMenu, PictDBActionsV1.getInstance());        
         MenuBuildStructV1 menuStructBuild=new MenuBuildStructV1(popupMenu,menuMap, menuItemMap,menuActions);                
         menuActions.setMenuItemMap(menuStructBuild.getMenuItemMap());        
         menuActions.setMenuMap(menuStructBuild.getMenuMap());                                
-        }
         
         
-    }    
-           
+        
+    }              
     
-    public JPopupMenu getMenuBar() {
+    public JPopupMenuAdj getMenuBar() {
         return popupMenu;
     }
 

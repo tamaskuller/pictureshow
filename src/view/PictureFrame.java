@@ -13,6 +13,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -22,6 +23,9 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JLayeredPane;
 import javax.swing.JPopupMenu;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+import view.Menu.JPopupMenuAdj;
 import view.enums.FormTypes;
 import view.enums.MotionTypes;
 import view.interfaces.NamedImageInt;
@@ -41,10 +45,11 @@ import view.util.Observer;
 public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInterface {
     private List<Observer> observers;
    protected List<PicturePaneInterface> picturePanes;
+   protected List<PicturePaneInterface> picturePanesUnderConst;
+   
    protected PictureFrameGettersInt pictureFrameGetters; 
     private boolean adminEnabled;
    private boolean fullState;
-      private boolean prevFullState;
 
    private Dimension currBaseSize;   
    private Dimension origSize;
@@ -54,8 +59,8 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
    protected double sizeRatioContPaneHeight;
    protected double sizeRatioWidth;
     protected double sizeRatioHeight;   
-    protected JPopupMenu popupMenu;
-    private Color resizeBorderColor=Color.RED;
+    protected JPopupMenuAdj popupMenu;
+    protected Border activeBorder=BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.RED, Color.PINK); 
     protected NamedImageInt image=null;    
     protected String imagePath;
     private boolean activated=true;
@@ -66,7 +71,7 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
     private PictContentPane pictContentPane;
     private boolean mainForm=false;
     private boolean firstShow=true;
-    
+    private boolean dbLoadReady=false;
 
 //    private String title;
    
@@ -82,6 +87,7 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
         this.setVisible(true);                
         
         this.picturePanes=new LinkedList<>();
+        this.picturePanesUnderConst=new LinkedList<>();
         this.adminEnabled=false;
         this.fullState=false;         
         this.sizeRatioWidth=1;
@@ -143,6 +149,8 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
             layeredPane.setLayer(comp, order);   
             setCompOrder(component, order);                
             repaint();
+            updateSizeLocation();
+            
             //showHideComponent(component, null,true,true, false, getComponentZOrder(component));            
             }
 //      
@@ -152,7 +160,9 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
     public void addPictPane(PicturePaneInterface pictPane,int order)
     {
         addComponent(pictPane, order);
-        this.picturePanes.add(pictPane);     
+        this.picturePanes.add(pictPane);  
+        this.picturePanesUnderConst.add(pictPane);
+        
        // pictPane.setVisible();
         
         //showHideComponents((fullState)?true:false, true);
@@ -173,7 +183,7 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
     {           
         setAdminEnabled(!adminEnabled);
         adminSwitch=true;                                                       
-        update(Action.ADMIN_DISABLED);
+        update(Action.ADMIN_DISABLED,this);
         updateSizeLocation();
        return isAdminEnabled();
     }
@@ -230,7 +240,6 @@ private void calcSizeRatios()
 
     @Override
     public void setFullState(boolean fullState, MotionTypes motionType, boolean checkMin) {
-        this.prevFullState=this.fullState;
         this.fullState=fullState;
         showHideComponents(fullState, true, motionType);
     }
@@ -259,9 +268,9 @@ private void calcSizeRatios()
     }
 
     @Override
-    public void update(Action action) {   
+    public void update(Action action, Object subject) {   
         System.out.println("updateFrame"+firstShow+isUnderConst());
-        if (adminSwitch&&!isUnderConst()&&action==Action.ADMIN_DISABLED)
+        if (action==Action.ADMIN_DISABLED&&!isUnderConst()&&adminSwitch)
             {               
             if (adminEnabled)
                 setSize(currBaseSize);                
@@ -270,14 +279,19 @@ private void calcSizeRatios()
             updateSizeLocation();                               
             adminSwitch=false;
             }        
-        if (!isUnderConst()&&action==Action.UNDERCONST_READY&&mainForm&&firstShow)               
-            {            
-            FormFactoryV1.createForm(FormTypes.INSTRUCTION_FORM, null, this, null);            
-            firstShow=false;
+        dbLoadReady=(action==Action.DB_LOAD_FRAME)?true:dbLoadReady;
+        if (action==Action.UNDERCONST_READY&&firstShow&&subject instanceof PicturePaneInterface)
+            {
+            picturePanesUnderConst.remove((PicturePaneInterface)subject);
+            System.out.println("paneready-get:"+((PicturePaneInterface) subject).getIconString()+dbLoadReady);
+            if (!isUnderConst()&&picturePanesUnderConst.isEmpty()&&dbLoadReady)               
+                {       
+                if (mainForm)
+                    FormFactoryV1.createForm(FormTypes.INSTRUCTION_FORM, null, this, null);            
+                firstShow=false;                    
+                popupMenu.setMenuActive(true);
+                }                   
             }
-       // if (action==Action.DB_LOAD_FRAME)
-          //  showState(true, null);
-            
     }
     
     
@@ -298,8 +312,7 @@ private void calcSizeRatios()
     }
 
     @Override
-    public int getComponentOrder(Object component) {
-        System.out.println("getcomporderonFrame:"+getLayeredPane().getComponentZOrder((Component) component));
+    public int getComponentOrder(Object component) {        
         if (component instanceof Component)
             return getLayeredPane().getComponentZOrder((Component) component);                    
         return 0;
@@ -319,7 +332,6 @@ private class PictContentPane extends Container{
         
         @Override
         public void paint(Graphics g) {
-            System.out.println("contentpanepaint");
             if (image!=null)
                 g.drawImage(image.getImage(),1, 1, getWidth()-2, getHeight()-2, new Color(0,0,0,125), null);
             super.paint(g); //To change body of generated methods, choose Tools | Templates.
@@ -507,12 +519,14 @@ private class PictContentPane extends Container{
     
 
     @Override
-    public JPopupMenu getPopupMenu() {
+    public JPopupMenuAdj getPopupMenu() {
         return popupMenu;
     }
 
+    
+    
     @Override
-    public void setPopupMenu(JPopupMenu popupMenu) {
+    public void setPopupMenu(JPopupMenuAdj popupMenu) {
         this.popupMenu=popupMenu;
         for (PicturePaneInterface picturePane : picturePanes) {
             picturePane.setPopupMenu(popupMenu);
@@ -534,14 +548,10 @@ private class PictContentPane extends Container{
     @Override
     public void activate()
     {                 
-        getRootPane().setBorder(BorderFactory.createLineBorder(getResizeBorderColor(),1));
+        getRootPane().setBorder(activeBorder);
     }
     
-    @Override
-    public Color getResizeBorderColor() {
-        return resizeBorderColor;
-    }
-
+    
     @Override
     public void mouseEnterred() {
         if (isAdminEnabled())                                            

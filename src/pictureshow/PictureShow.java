@@ -57,31 +57,26 @@ public class PictureShow {
                 .adjMaxSize(false)
                 .build();
         //System.out.println("main arguments:"+args[0]);
-       
-        String message="LOCAL AppHostType defaulted";
-        if (args.length>0)                  
+               
+        if (args.length>1)                  
             try{
-            AppHostType.valueOf(args[0]);
-            StaticEnvironmentParams.appHostType=AppHostType.valueOf(args[0]);        
+            StaticEnvironmentParams.appHostType=AppHostType.valueOf(args[1]);                   
             } catch (IllegalArgumentException ex)
                     {
-                        System.out.println("Not supported AppHostType - "+message);
-                    }                        
-        else System.out.println(message);
-        boolean frameLoaded=false;
-        if (args.length>1)
+                        System.out.println("Not supported AppHostType - "+StaticEnvironmentParams.appHostType.name());
+                    }                                
+        System.out.println(StaticEnvironmentParams.appHostType.name()+" host type defaulted!");
+        boolean frameLoaded=false;        
+        if (args.length>0)
             try {
-                PictDBActionsV1.getInstance().loadFrame(args[1]);
+                PictDBActionsV1.getInstance().loadFrame(args[0]);
                 frameLoaded=true;
                 //FormFactoryV1.createForm(FormTypes.INSTRUCTION_FORM, null, pictureFrame, null);
                 } catch (NonexistentEntityException ex) {
                 JOptionPane.showMessageDialog(null, ex.getMessage());                
                 }                
         if (!frameLoaded)
-            {
-            pictureFrame=FormFactoryV1.createForm(FormTypes.PICTUREFRAME,null,null,params);                                                  
-            pictureFrame.update(Observer.Action.UNDERCONST_READY);
-            }
+            pictureFrame=FormFactoryV1.createForm(FormTypes.PICTUREFRAME,null,null,params);                                                              
         else
         if (!frameLoaded)
             {

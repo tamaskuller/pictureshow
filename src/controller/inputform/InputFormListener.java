@@ -92,12 +92,12 @@ public class InputFormListener implements ActionListener {
                 case INPUTFORM_PANE:
                     setPictCompParams();
                     PicturePaneInterface pane = PictCompFactV1.createPictPane(pictCompParams, parentPane, 0, true, true);
-                    pane.showState(true, null);
+                    pane.maximize();
                     break;
                 case INPUTFORM_PICT:
                     setPictCompParams();
                     PictCompFactV1.createPictComponent(PictCompTypes.PICTURECOMPONENT, pictCompParams, parentPane, 0, false);
-                    System.out.println("pictcompaddheight:"+pictCompParams.getHeight());                    
+                    System.out.println("pictcompaddheight:"+pictCompParams.getHeight());                                        
                     parentPane.showState(true, null);
                     //parentPane.setFullState(true, MotionTypes.Simple,true);
                     break;

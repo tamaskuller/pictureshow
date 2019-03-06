@@ -30,7 +30,7 @@ public interface Subject {
     {
         if (!getObservers().isEmpty())
             for (Observer observer : this.getObservers()) {
-                observer.update(action);   
+                observer.update(action, this);   
                 System.out.println("subject"+this+"notifyobs:"+observer+" - "+action);
             }
     }

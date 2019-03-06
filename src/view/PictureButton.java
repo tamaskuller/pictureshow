@@ -24,19 +24,21 @@ public class PictureButton extends PictureComponent {
     public PictureButton(PicturePaneInterface parentPane,PictCompParams params ) {        
         super(parentPane,params);        
         minWidthMultiplier=0.05;
-        minHeightMultiplier=0.05;       
+        minHeightMultiplier=0.05;  
+        normalBorder=BorderFactory.createEmptyBorder();
         
     }
        
     @Override
     public void paint(Graphics grphcs) {
-        super.paint(grphcs); //To change body of generated methods, choose Tools | Templates.                        
-        System.out.println(grphcs.getColor());   
+        super.paint(grphcs); //To change body of generated methods, choose Tools | Templates.                                
         //currentButtonColor=(grphcs.getColor()==BUTTON_COLOR)?BUTTON_COLOR2:BUTTON_COLOR;
         grphcs.setColor(currentButtonColor);
         grphcs.fillOval(0, 0, getWidth()-1, getHeight()-1);                
     }
 
+    
+    
     @Override
     public void mouseEnterred() {
         setBorder(BorderFactory.createEmptyBorder());

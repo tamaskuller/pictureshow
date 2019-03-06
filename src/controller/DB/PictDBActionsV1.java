@@ -88,7 +88,7 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
         //if (!oldTitle.equals(pictureFrameGetters.getTitle())&&
         if (!pictureFrameGetters.getTitle().isEmpty())
             {                       
-                System.out.println("mentés");
+                System.out.println("save");
             PictureFrameTable pictureFrameTable=new PictureFrameTable();
                 setFrameFields(pictureFrameTable, pictureFrameGetters);
             try {
@@ -169,8 +169,7 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
                 }            
             
             for (AttachedGettersInt pictureComponent : picturePaneInterface.getPictureComponents()) {                                               
-                if (pictureComponent instanceof PicturePaneInterface)
-                    //System.out.println("mentés volna itt");
+                if (pictureComponent instanceof PicturePaneInterface)                    
                     savePane((PicturePaneInterface) pictureComponent, null, picturePaneTable);
                 else
                     if (pictureComponent instanceof PictureButton)
@@ -294,7 +293,7 @@ public synchronized PictureFrameInterface loadFrame(String name) throws Nonexist
            if (!query.getResultList().isEmpty()&&!name.isEmpty())
                 {
                pictureFrameTable=(PictureFrameTable) query.getResultList().get(0);
-               System.out.println("meglett a rekord"+query.getResultList().get(0).toString());
+               System.out.println("found record:"+query.getResultList().get(0).toString());
                     JFrameBaseFormParams params=new JFrameBaseFormParams.BaseFormParamsBuild()
                             .newInstance()
                             .width(pictureFrameTable.getFrameSizeWidth())
@@ -345,7 +344,11 @@ public void loadPane(PicturePaneTable picturePaneTable, PicturePaneInterface pic
                                             loadComponent(picturePane,pictureComponentTable);                                            
                                         }        
                             }
-                            picturePane.showState(true, null);
+                            if (picturePane.isFullState())
+                                picturePane.maximize();
+                            else
+                                picturePane.minimize();
+                            //picturePane.showState(true, null);
                             }                        
                     }
 

@@ -5,81 +5,81 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html>
+    <head>
+        <style>
+            li {
+                line-height: 2;
+            }
+            p{
+                line-height: 1.5;
+            }
+            b{
+                font-size: large;
+            }
+        </style>
+    </head>
+    <body>
+        <h2 align="center">Welcome to PictureShow Application - <span style="font-size: medium">Instructions</span></h2>        
+        <table border="1">               
+            <tbody align="left" valign="top" style="line-height: 1">
+                <tr align="center"><th style="width: 25%"><b style="font-size: large">Basic User Mode</b> (app starts in this mode)</th><th style="width: 75%; font-size: large">Extras (Admin Mode)</th></tr>
+                <tr>
+                    <td>                    
+                        <ol style="font-size: large">                                        
+                            <li><b>Left Click on picture</b> </li>                
+                            &emsp;=> <b>Activate</b> picture by bringing to front (<b style="color: blue">Animated!</b>)
+                            <li><b>Left Click on red button </b></li>                    
+                            &emsp;=> <b>Show / hide picture</b> groups (<b style="color: blue">Animated!</b>)
+                            <li><b>Resize / move mainForm </b> (usual windows way)</li>                    
+                            &emsp;=> <b style="color: blue">SubElements automatically adjusted <br/>
+                                &emsp;&emsp;keeping the relative size / position with parent</b>                                
+                        </ol>
+                    </td>
+                    <td>                                
+                        <p style="font-size: larger; font-weight: bold; color: red">Designer / Admin mode enabling:</p>
+                        <b style="font-size: larger; line-height: 1.5; color: blue">Activate Popup menu by Right-click anywhere on MainForm<br/>                                
+                            Choose "Tools -> "Enable Admin Mode"</b>                    
+                        <p><b style="font-size: large">Popup-menu functions </b>(in admin mode):
+                            <br/>&emsp;&emsp;<span style="color: blue">=> They are Visible in popup only by right-clicking again after enabling admin!</span>
+                        </p>
+                        <ol>
+                            <li><b>"Manage layouts"</b> submenu&emsp;</li>
+                            <li><b>&emsp;"...New layout"</b> &emsp;=> opens up a new empty form</li>
+                            &emsp;&emsp;...helping subform pops up after clicking
+                            <li><b>&emsp;"...Save layout"</b> &emsp;=> to Database</li>
+                            &emsp;&emsp;...helping subform pops up after clicking
+                            <li><b>&emsp;"...Load / Delete layout"</b> &emsp;=> from Database </li>                                    
+                            &emsp;&emsp;...helping subform pops up after clicking
 
-    <style>
-        li {
-            line-height: 2;
-        }
-        p{
-            line-height: 1.5;
-        }
-        b{
-            font-size: large;
-        }
-    </style>
-    <h2 align="center">Welcome to PictureShow Application - <span style="font-size: medium">Instructions</span></h2>        
-    <p class="medium">
-    <table border="1">               
-        <tbody align="left" valign="top" style="line-height: 1">
-            <tr align="center"><th style="width: 25%"><b style="font-size: large">Basic User Mode</b> (app starts in this mode)</th><th style="width: 75%; font-size: large">Extras (Admin Mode)</th></tr>
-            <tr>
-                <td>                    
-                    <ol style="font-size: large">                                        
-                        <li><b>Left Click on picture</b> </li>                
-                        &emsp;=> <b>Activate</b> picture by bringing to front (<b style="color: blue">Animated!</b>)
-                        <li><b>Left Click on red button </b></li>                    
-                        &emsp;=> <b>Show / hide picture</b> groups (<b style="color: blue">Animated!</b>)
-                        <li><b>Resize / move mainForm </b> (usual windows way)</li>                    
-                        &emsp;=> <b style="color: blue">SubElements automatically adjusted <br/>
-                            &emsp;&emsp;keeping the relative size / position with parent</b>                                
-                    </ol>
-                </td>
-                <td>                                
-                    <p style="font-size: larger; font-weight: bold; color: red">Designer / Admin mode enabling:</p>
-                    <b style="font-size: larger; line-height: 1.5; color: blue">Activate Popup menu by Right-click anywhere on MainForm<br/>                                
-                        Choose "Tools -> "Enable Admin Mode"</b>                    
-                    <p><b style="font-size: large">Popup-menu functions </b>(in admin mode):
-                        <br/>&emsp;&emsp;<span style="color: blue">=> They are Visible in popup only by right-clicking again after enabling admin!</span>
-                    </p>
-                    <ol>
-                        <li><b>"Manage layouts"</b> submenu&emsp;</li>
-                        <li><b>&emsp;"...New layout"</b> &emsp;=> opens up a new empty form</li>
-                        &emsp;&emsp;...helping subform pops up after clicking
-                        <li><b>&emsp;"...Save layout"</b> &emsp;=> to Database</li>
-                        &emsp;&emsp;...helping subform pops up after clicking
-                        <li><b>&emsp;"...Load / Delete layout"</b> &emsp;=> from Database </li>                                    
-                        &emsp;&emsp;...helping subform pops up after clicking
-                        
-                        <li><b>"Manage component"</b> submenu&emsp;</li>
-                        ...IMPORTANT! applies to the component on which we right clicked
-                        <li><b>&emsp;..."Add Background"</b> => adding a background picture</li>
-                        &emsp;&emsp;...menu can be seen only if clicked on Pane or Main window<br/>
-                        &emsp;&emsp;...helping subform pops up -> <span style="color: blue">double click on "Path...." field opens a file browser</span>
+                            <li><b>"Manage component"</b> submenu&emsp;</li>
+                            ...IMPORTANT! applies to the component on which we right clicked
+                            <li><b>&emsp;..."Add Background"</b> => adding a background picture</li>
+                            &emsp;&emsp;...menu can be seen only if clicked on Pane or Main window<br/>
+                            &emsp;&emsp;...helping subform pops up -> <span style="color: blue">double click on "Path...." field opens a file browser</span>
 
-                        &emsp;<li>&emsp;<b>..."Add Picture"</b> => adding picture to Pane</li>
-                        &emsp;&emsp;...menu can be seen only if clicked on Pane<br/>
-                        &emsp;&emsp;...helping subform pops up -> <span style="color: blue">double click on "Path...." field opens a file browser</span>
+                            &emsp;<li>&emsp;<b>..."Add Picture"</b> => adding picture to Pane</li>
+                            &emsp;&emsp;...menu can be seen only if clicked on Pane<br/>
+                            &emsp;&emsp;...helping subform pops up -> <span style="color: blue">double click on "Path...." field opens a file browser</span>
 
-                        &emsp;<li>&emsp;<b>..."Add Pane"</b> => adding a box for group of Pictures</li>
-                        &emsp;&emsp;...menu can be seen only if clicked on Pane or Main window<br/>
-                        &emsp;&emsp;...helping subform pops up -> double click on "Path...." field opens a file browser <br/>
-                        &emsp;&emsp;...Note! Multi-level structure can be created if we put Pane into Pane!                                    
+                            &emsp;<li>&emsp;<b>..."Add Pane"</b> => adding a box for group of Pictures</li>
+                            &emsp;&emsp;...menu can be seen only if clicked on Pane or Main window<br/>
+                            &emsp;&emsp;...helping subform pops up -> double click on "Path...." field opens a file browser <br/>
+                            &emsp;&emsp;...Note! Multi-level structure can be created if we put Pane into Pane!                                    
 
-                        &emsp;<li><b>"Delete Component"</b> => remove Picture / Pane</li>
-                        &emsp;...menu can be seen only if clicked on Picture / Pane
+                            &emsp;<li><b>"Delete Component"</b> => remove Picture / Pane</li>
+                            &emsp;...menu can be seen only if clicked on Picture / Pane
 
-                        <li><b>Mouse drag and drop => to Move </b>components </li>
-                        &emsp;...works both on Pictures, Panes and Main window
-                        <li><b>Mouse drag and move border => to Resize </b>components </li>
-                        &emsp;...works both on Pictures, Panes and Main window
-                        <li><b>Double-click => to Re-order</b> Panes </li>                                                                                            
-                        &emsp;...works only on Panes
+                            <li><b>Mouse drag and drop => to Move </b>components </li>
+                            &emsp;...works both on Pictures, Panes and Main window
+                            <li><b>Mouse drag and move border => to Resize </b>components </li>
+                            &emsp;...works both on Pictures, Panes and Main window
+                            <li><b>Double-click => to Re-order</b> Panes </li>                                                                                            
+                            &emsp;...works only on Panes
 
-                    </ol>                           
-                </td>
-            </tr>                   
-        </tbody>
-    </table>
-</p>
-
+                        </ol>                           
+                    </td>
+                </tr>                   
+            </tbody>
+        </table>
+    </body>
 </html>

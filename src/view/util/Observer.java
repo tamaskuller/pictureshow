@@ -11,10 +11,10 @@ package view.util;
  * @author Kuller Tamas
  */
 public interface Observer {
-    public void update(Action action);
+    public void update(Action action, Object subject);
 
     public enum Action {
-        UNDERCONST_READY,UNDERCONST_READY_TO_PARENT, ADMIN_DISABLED, DB_SAVE_FRAME, DB_DELETE_FRAME, DB_LOAD_FRAME, READY_FOR_DELETE, READY_FOR_SAVE
+        UNDERCONST_READY, ADMIN_DISABLED, DB_SAVE_FRAME, DB_DELETE_FRAME, DB_LOAD_FRAME, READY_FOR_DELETE, READY_FOR_SAVE
 
     }
 }

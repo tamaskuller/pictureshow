@@ -35,8 +35,7 @@ public class MenuMouseListenerBuildV1 {
     public void mouseReleased(MouseEvent e) {
         //super.mouseReleased(e); //To change body of generated methods, choose Tools | Templates.
         if (e.isPopupTrigger()) {
-                    menu.show(e.getComponent(), e.getX(), e.getY());                    
-                    
+                    menu.show(e.getComponent(), e.getX(), e.getY());                                        
                 }
     }
 

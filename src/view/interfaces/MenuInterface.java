@@ -6,12 +6,13 @@
 package view.interfaces;
 
 import javax.swing.JPopupMenu;
+import view.Menu.JPopupMenuAdj;
 
 /**
  *
  * @author Tamas Kuller
  */
 public interface MenuInterface {
-      public JPopupMenu getPopupMenu();
-    public void setPopupMenu(JPopupMenu popupMenu);      
+      public JPopupMenuAdj getPopupMenu();
+    public void setPopupMenu(JPopupMenuAdj popupMenu);      
 }

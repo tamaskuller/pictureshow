@@ -151,7 +151,7 @@ public class FramesTableFormSingV2 extends InputForm implements Observer {
     }
 
     @Override
-    public synchronized void update(Action action) {
+    public synchronized void update(Action action, Object subject) {
         switch (action)
         {
             case DB_SAVE_FRAME:

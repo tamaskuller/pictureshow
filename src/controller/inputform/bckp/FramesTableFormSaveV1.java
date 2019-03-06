@@ -117,10 +117,8 @@ public class FramesTableFormSaveV1 extends FramesTableFormSingV1 implements Obse
     }
 
     @Override
-    public void update(Action action) {
-        super.update(action); //To change body of generated methods, choose Tools | Templates.
-       // parent.activate();
-        //if (!parent.isActived())
+    public void update(Action action, Object subject) {
+        super.update(action, this); //To change body of generated methods, choose Tools | Templates.
         if (!parent.isActivated())
             close();
     }

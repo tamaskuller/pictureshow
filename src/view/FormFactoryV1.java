@@ -85,13 +85,13 @@ static int onClose;
                 pictureFrame.addMouseListener(MenuMouseListenerBuildV1.getInstance().buildMouseListener(menuInit.getMenuBar()));     
                 form=pictureFrame;    
                 formObject=pictureFrame;                
+                PictDBActionsV1.getInstance().addObserver(pictureFrame);
                 if (mainForm==null)
                     {
                     mainForm=pictureFrame;
                     pictureFrame.setMainForm(true);
                     form.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);   
-                    System.out.println("mainformCreated");   
-                    PictDBActionsV1.getInstance().addObserver(mainForm);
+                    System.out.println("mainformCreated");                       
                     }                
                 break;
         }

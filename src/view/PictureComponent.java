@@ -20,12 +20,15 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
 import javax.swing.Timer;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 import view.enums.MotionTypes;
 import view.interfaces.PictureComponentInterface;
 import view.interfaces.PicturePaneInterface;
 import view.recordtypeclasses.PictCompParams;
 import view.interfaces.PictureComponentGettersInt;
 import util.mapping.MapInterface;
+import view.Menu.JPopupMenuAdj;
 import view.interfaces.NamedImageInt;
 import view.recordtypeclasses.AnimParams;
 import view.util.Observer;
@@ -41,7 +44,9 @@ public class PictureComponent extends AdaptPictJComponent{
     protected final static int MAX_PENDING_PAINT=6;     
     protected final static int DEFAULT_FONT_STLYE=Font.BOLD;
     protected final static int BORDER_SECURE_DIST=1;
-    protected Color resizeBorderColor=Color.GREEN;
+    protected Border activeBorder=BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.RED, Color.PINK);    
+    protected Border normalBorder=BorderFactory.createLoweredBevelBorder();
+    
     protected double minWidth;     
     protected double minHeight;                             
     protected double minWidthMultiplier=0.1;     
@@ -87,7 +92,7 @@ public class PictureComponent extends AdaptPictJComponent{
     protected boolean minOverrideMotion=false;        
             
     private List<PaintRequestParams> paintRequests;    
-    protected JPopupMenu popupMenu;
+    protected JPopupMenuAdj popupMenu;
 
 
     
@@ -126,8 +131,7 @@ public class PictureComponent extends AdaptPictJComponent{
    
     @Override
     public void paintPict(PaintRequestParams paintRequest)             
-            {           
-                System.out.println("SHOWWWW:"+paintRequest.show+"Forced:"+paintRequest.forced);                                                                
+            {                           
                 if ((paintRequests.isEmpty()&&!shown==paintRequest.show)||paintRequest.forced)
                     paintRequests.add(paintRequest);
                 if (timerPending==null)
@@ -146,7 +150,7 @@ public class PictureComponent extends AdaptPictJComponent{
                           {
                             timerPending.stop();
                             timerPending=null;                                                  
-                            parentPane.update(Observer.Action.UNDERCONST_READY_TO_PARENT);
+                            parentPane.update(Observer.Action.UNDERCONST_READY, this);
                            //    update(Observer.Action.UNDERCONST_READY);
                            }
                           };
@@ -173,15 +177,13 @@ public class PictureComponent extends AdaptPictJComponent{
                                 
                                 @Override
                                 public void actionPerformed(ActionEvent ae) {
-                                //timer.stop();                                                                
                             //    System.out.println("Timer"+waitTime+"EDT?:"+SwingUtilities.isEventDispatchThread()+"step:"+stepTimer);                                                           
                                 stepTimer=stepTimer+((showTimer)?1:-1);                                                                    
                                 motionRatio=stepTimer/stepsTimer;                                
                                 updateSizeLocation();                                                               
                                 if (showTimer?stepsTimer==stepTimer:0==stepTimer)
                                     {
-                                    timer.stop();  
-                                    System.out.println("TIMERSTOP"+stepTimer);                                                                                       
+                                    timer.stop();                                      
                                     shown=showTimer; 
                                     minimized=!showTimer;
                                     paintRequests.remove(paintRequestTimer);  
@@ -193,14 +195,7 @@ public class PictureComponent extends AdaptPictJComponent{
                             timer.start();                                    
                             System.out.println("PICT:"+this.toString());                                                        
         }
-
-    @Override
-    public void update(Action action) {
-        if (action==Action.UNDERCONST_READY)
-            {
-            }
-    }
-    
+   
     
     
     
@@ -341,7 +336,7 @@ public class PictureComponent extends AdaptPictJComponent{
     @Override
     public void setVisible(boolean aFlag) {
                 super.setVisible(aFlag); //To change body of generated methods, choose Tools | Templates.
-                setToolTipText(toolTipText);
+                setToolTipText(toolTipText);                
     }
     
     @Override
@@ -378,7 +373,6 @@ public class PictureComponent extends AdaptPictJComponent{
             {
                 adjCurrBaseLocation(-addWidth,-addHeight);                                        
             }
-                    
 //            if (adjustLoc)    
 //                    adjCurrBaseLocation((origDim.getWidth()-adjDim.getWidth()),origDim.getHeight()-adjDim.getHeight());                                        
             adjDim=getMaxSize(adjDim,false);                            
@@ -419,8 +413,9 @@ public class PictureComponent extends AdaptPictJComponent{
     }
 
     @Override
-    public synchronized void setAdminEnabled(boolean adminEnabled) {
-        this.adminEnabled = adminEnabled;        
+    public synchronized void setAdminEnabled(boolean adminEnabled) {        
+        this.adminEnabled = adminEnabled;             
+        
     }
     
    
@@ -439,36 +434,42 @@ public class PictureComponent extends AdaptPictJComponent{
     
     @Override
     public void deActivate()
-    {
-            setBorder(null);                                         
+    {     
+         normalBorder();
     }
     
     @Override
     public void activate()
-    {setBorder(BorderFactory.createLineBorder(getResizeBorderColor()));
+    { 
+        setBorder(activeBorder);
+    }
+    
+    protected void normalBorder()
+    {
+        if (isMinimzed())
+            setBorder(null);
+        else
+            setBorder(normalBorder);
     }
 
         @Override
     public void setVisible() {
         setVisible(true);
+        
     }
 
     @Override
     public void setInVisible() {
         setVisible(false);
     }
-    
-    @Override
-    public Color getResizeBorderColor() {
-        return resizeBorderColor;
-    }
+                
 
     @Override
     public void mouseEnterred() {
         if (isAdminEnabled())                                            
             {
             parentPane.activate();        
-            activate();
+            activate();        
            }
     }
 
@@ -479,6 +480,7 @@ public class PictureComponent extends AdaptPictJComponent{
                     parentPane.deActivate();        
                     deActivate();
                 }
+        
     }
 
     @Override
@@ -508,12 +510,12 @@ public class PictureComponent extends AdaptPictJComponent{
     }
     
     @Override
-    public JPopupMenu getPopupMenu() {
+    public JPopupMenuAdj getPopupMenu() {
         return popupMenu;
     }
 
     @Override
-    public void setPopupMenu(JPopupMenu popupMenu) {
+    public void setPopupMenu(JPopupMenuAdj popupMenu) {
         this.popupMenu=popupMenu;
     }
 
@@ -545,7 +547,8 @@ public class PictureComponent extends AdaptPictJComponent{
     
     protected void constructed()
     {
-        underConst=false;
+        underConst=false;        
+        normalBorder();
     }
 
     @Override

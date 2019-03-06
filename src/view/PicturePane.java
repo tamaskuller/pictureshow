@@ -16,7 +16,11 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+import view.Menu.JPopupMenuAdj;
 import view.enums.MotionTypes;
 import view.interfaces.PicturePaneInterface;
 import view.recordtypeclasses.PaintRequestParams;
@@ -53,7 +57,8 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         this.button=null;  
         this.shown=false;
         this.underConst=false;               
-        this.resizeBorderColor=Color.BLUE;        
+        //this.resizeBorderColor=Color.BLUE;     
+        activeBorder=BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.BLUE, Color.CYAN);    
         System.out.println("Width:"+getWidth());                
         minWidthMultiplier=0.3; 
         this.fullState=fullState;
@@ -70,48 +75,50 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         System.out.println("SETSTATE");
         if (this.getParent()!=null)
                   showHideComponent(button, motionType, true, false, getComponentOrder(button));                                             
-        if (firstShow)
-            {
-            System.out.println("firstshow"+getIconString());                
-            superPaintPict(true,motionType, true);
-            if (!fullState)
-                superPaintPict(false,MotionTypes.FAST_FLOWING , true);
-            firstShow=false;
-            }
-        showHideComponents(fullState, forced,motionType);            
-        
+        showHideComponents(fullState, forced,motionType);                    
     }       
             
     @Override
     public void setFullState(boolean fullState, MotionTypes motionType, boolean checkMin) {        
         System.out.println("setfullstate");                
-            this.fullState = fullState;                                        
-            if (fullState)
-                {
-                superPaintPict(true, motionType, checkMin);
-                System.out.println("getbacktoorigbasesize"+fullStateCurrBaseSize.height);
-                minimized=false;                                  
-                }   
-            else 
-                minOverride=checkMin;                    
-            showState(true, motionType);
+        this.fullState = fullState;                                        
+        if (fullState||firstShow)
+            {
+            superPaintPict(true, motionType, checkMin);
+            minimized=false;                                  
+            }   
+        if (!fullState)
+            {
+            minOverride=checkMin;                    
+            if (firstShow)
+                superPaintPict(false,MotionTypes.FAST_FLOWING , true);
+            }
+        showState(true, motionType);
+        firstShow=false;                
     }
   
     @Override
-    public synchronized void update(Action action) 
+    public synchronized void update(Action action, Object subject) 
     {                       
-        if (!isUnderConst()&&action==Action.UNDERCONST_READY_TO_PARENT)
+        if (!isUnderConst()&&action==Action.UNDERCONST_READY)
             {            
             if (!fullState&&minimized==false)                
-                {
-                System.out.println("updatecurrheight"+currBaseSize.height);
+                {                
                 minimized=true; 
                 superPaintPict(false, defaultMotionType, true);
                 } 
-            parentPane.update(Action.UNDERCONST_READY_TO_PARENT);            
+            System.out.println("paneready-sent:"+iconString);
+            parentPane.update(Action.UNDERCONST_READY, this);            
             }        
     }               
 
+    @Override
+    protected void constructed() {
+        super.constructed(); //To change body of generated methods, choose Tools | Templates.
+        update(Action.UNDERCONST_READY, this);
+    }
+
+    
     
     @Override
     public boolean isAdminEnabled() {
@@ -131,7 +138,7 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
    
     @Override
     public boolean isUnderConst() {         
-        return super.isUnderConst()||underConstComp()||isFullState()!=fullState;
+        return super.isUnderConst()||underConstComp();//||isFullState()!=fullState;
     }
 
     
@@ -253,11 +260,8 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     
     public void setCompOrderMotion(Object component, int order,MotionTypes motionType)
    {                
-            synchronized (this)
-            {
             showHideComponent(component,motionType,false,true,getComponentOrder(component));                
-            showHideComponent(component,motionType,true, true, adjCompOrder(component, order));        
-            }
+            showHideComponent(component,motionType,true, true, adjCompOrder(component, order));                    
             Collections.sort(pictureComponents);
             
     }
@@ -357,12 +361,12 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     }
 
     @Override
-    public JPopupMenu getPopupMenu() {
+    public JPopupMenuAdj getPopupMenu() {
         return popupMenu;
     }
     
      @Override
-    public void setPopupMenu(JPopupMenu popupMenu) {
+    public void setPopupMenu(JPopupMenuAdj popupMenu) {
         this.popupMenu=popupMenu;
          for (PictureComponentInterface pictureComponent : pictureComponents) {
              pictureComponent.setPopupMenu(popupMenu);             

@@ -107,7 +107,7 @@ public class FramesTableFormSingV1 extends InputForm implements Observer {
     }
 
     @Override
-    public void update(Action action) {
+    public void update(Action action, Object subject) {
         if (action==Action.DB_SAVE_FRAME)
             updateSizeLocation();
     }

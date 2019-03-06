@@ -50,11 +50,6 @@ public final class StaticEnvironmentParams {
         }
         
         File file=new File(url.getFile());        
-        System.out.println("filepath:"+file.getAbsolutePath());
-        System.out.println("filepath:"+file.getPath());        
-        System.out.println("project path url01:"+url.toString().replaceAll(url.getFile(), ""));        
-        System.out.println("project path url3:"+url.getPath());        
-        System.out.println("project path url final:"+path);
         return path;                        
     }
 
