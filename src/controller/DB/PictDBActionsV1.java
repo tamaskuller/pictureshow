@@ -348,7 +348,6 @@ public void loadPane(PicturePaneTable picturePaneTable, PicturePaneInterface pic
                                 picturePane.maximize();
                             else
                                 picturePane.minimize();
-                            //picturePane.showState(true, null);
                             }                        
                     }
 

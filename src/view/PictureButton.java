@@ -41,17 +41,18 @@ public class PictureButton extends PictureComponent {
     
     @Override
     public void mouseEnterred() {
-        setBorder(BorderFactory.createEmptyBorder());
         currentButtonColor=BUTTON_COLOR_ACTIVE;
+        setBorder(BorderFactory.createEmptyBorder());        
         super.mouseEnterred(); //To change body of generated methods, choose Tools | Templates.
+        repaint();
     }
 
     @Override
     public void mouseExited() {
-        setBorder(null);
         currentButtonColor=BUTTON_COLOR;
+        setBorder(BorderFactory.createEmptyBorder());        
         super.mouseExited(); //To change body of generated methods, choose Tools | Templates.        
-        
+        repaint();
     }
     
     @Override

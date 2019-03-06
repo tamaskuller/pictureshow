@@ -27,6 +27,7 @@ import view.FormFactoryV1;
 import view.enums.FormTypes;
 import view.inputForm.InputBox;
 import view.inputForm.InputFormInt;
+import view.interfaces.PictureComponentInterface;
 import view.recordtypeclasses.CompParams;
 import view.recordtypeclasses.JFrameBaseFormParams;
 import view.recordtypeclasses.PictCompParams;
@@ -96,10 +97,9 @@ public class InputFormListener implements ActionListener {
                     break;
                 case INPUTFORM_PICT:
                     setPictCompParams();
-                    PictCompFactV1.createPictComponent(PictCompTypes.PICTURECOMPONENT, pictCompParams, parentPane, 0, false);
-                    System.out.println("pictcompaddheight:"+pictCompParams.getHeight());                                        
-                    parentPane.showState(true, null);
-                    //parentPane.setFullState(true, MotionTypes.Simple,true);
+                    PictureComponentInterface pictureComponent=PictCompFactV1.createPictComponent(PictCompTypes.PICTURECOMPONENT, pictCompParams, parentPane, 0, false);
+                    System.out.println("pictcompaddheight:"+pictCompParams.getHeight()); 
+                    pictureComponent.maximize();
                     break;
                 case INPUTFORM_BACKPICT:
                     setPictCompParams();

@@ -15,6 +15,8 @@ public interface ActiveComponentInt {
     public void onClick();
     public void activate();
     public void deActivate();
+    public void minimize();    
+    public void maximize(); 
     
     
     

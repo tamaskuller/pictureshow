@@ -454,15 +454,26 @@ public class PictureComponent extends AdaptPictJComponent{
 
         @Override
     public void setVisible() {
-        setVisible(true);
-        
+        setVisible(true);       
     }
 
     @Override
     public void setInVisible() {
         setVisible(false);
     }
+
+    @Override
+    public void minimize() {
+        paintPict(new PaintRequestParams(false, true, defaultMotionType, parentPane.getComponentOrder(this), false));
+    }
+
+    @Override
+    public void maximize() {
+        paintPict(new PaintRequestParams(true, true, defaultMotionType, parentPane.getComponentOrder(this), false));
+    }
                 
+    
+    
 
     @Override
     public void mouseEnterred() {

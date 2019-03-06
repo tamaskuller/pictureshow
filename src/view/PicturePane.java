@@ -82,7 +82,7 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     public void setFullState(boolean fullState, MotionTypes motionType, boolean checkMin) {        
         System.out.println("setfullstate");                
         this.fullState = fullState;                                        
-        if (fullState||firstShow)
+        if (fullState)//||firstShow)
             {
             superPaintPict(true, motionType, checkMin);
             minimized=false;                                  
@@ -91,7 +91,10 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
             {
             minOverride=checkMin;                    
             if (firstShow)
-                superPaintPict(false,MotionTypes.FAST_FLOWING , true);
+                {
+                superPaintPict(true,motionType , true);
+                superPaintPict(false,motionType , true);
+                }
             }
         showState(true, motionType);
         firstShow=false;                
@@ -244,10 +247,10 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
 
     @Override
     public synchronized void paintPict(PaintRequestParams paintRequest) {
-        if (isMinimzed()&&!parentPane.isFullState())
-                superPaintPict(true,MotionTypes.FAST_FLOWING , paintRequest.checkMin);        
+//        if (isMinimzed()&&!parentPane.isFullState())
+  //              superPaintPict(true,MotionTypes.FAST_FLOWING , paintRequest.checkMin);        
         super.paintPict(paintRequest); //To change body of generated methods, choose Tools | Templates.        
-        setFullState(paintRequest.show, paintRequest.motionType, paintRequest.checkMin);
+//        setFullState(paintRequest.show, paintRequest.motionType, paintRequest.checkMin);
     }        
 
     private void superPaintPict(boolean show, MotionTypes motionType,boolean checkMin)
