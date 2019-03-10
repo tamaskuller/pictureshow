@@ -1,1 +1,0 @@
-java -jar dist\PictureShow.jar Jobs

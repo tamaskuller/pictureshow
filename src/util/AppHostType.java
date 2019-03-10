@@ -10,7 +10,7 @@ package util;
  * @author Tamas Kuller
  */
 public enum AppHostType {
-    LOCAL,REMOTE;
+    LOCAL,REMOTE, IDE_RUN;
             
     
 }

@@ -46,6 +46,7 @@ public class PictureComponent extends AdaptPictJComponent{
     protected final static int BORDER_SECURE_DIST=1;
     protected Border activeBorder=BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.RED, Color.PINK);    
     protected Border normalBorder=BorderFactory.createLoweredBevelBorder();
+    protected Border currentBorder=normalBorder;
     
     protected double minWidth;     
     protected double minHeight;                             
@@ -76,7 +77,7 @@ public class PictureComponent extends AdaptPictJComponent{
     protected double locRatioWidth=1;
     protected double locRatioHeight=1;   
 
-    protected double motionRatio=1;    
+    protected double motionRatio=0;    
     
     protected String iconString;  
     protected String toolTipText;      
@@ -186,9 +187,8 @@ public class PictureComponent extends AdaptPictJComponent{
                                     timer.stop();                                      
                                     shown=showTimer; 
                                     minimized=!showTimer;
-                                    paintRequests.remove(paintRequestTimer);  
-                                    constructed();
-                                    //underConst=false;
+                                    paintRequests.remove(paintRequestTimer);                                      
+                                    constructed();                                                                        
                                     }         
                             }                
                             });
@@ -203,7 +203,7 @@ public class PictureComponent extends AdaptPictJComponent{
     public void paintComponent(Graphics grphcs) {                
         super.paintComponent(grphcs); //To change body of generated methods, choose Tools | Templates.             
         
-            if (image!=null&&(!isMinimzed()||underConst))
+            if (image!=null&&(!isMinimzed()||underConst||shown))
                 grphcs.drawImage(image.getImage(), BORDER_SECURE_DIST,BORDER_SECURE_DIST, getWidth()-2*BORDER_SECURE_DIST, getHeight()-2*BORDER_SECURE_DIST,new Color(0, 0, 0, 125), null);        
             Font font=grphcs.getFont();        
             grphcs.setFont(new Font(font.getFontName(),DEFAULT_FONT_STLYE , DEF_FONT_SIZE));        
@@ -252,10 +252,7 @@ public class PictureComponent extends AdaptPictJComponent{
     public void setSize(Dimension d) {  
                 Dimension adjSize=getAdjCurrSize(true,true,true);                                 
                 super.setSize(adjSize); //To change body of generated methods, choose Tools | Templates.                    
-                //this.iconStringPos=new Point((int)minWidth/5,(int)minHeight/2);                       
                 this.iconStringPos=new Point((int)minWidth/5,(int)minHeight/2);        
-              //  if (!isVisible())
-                  // setVisible(true);               
     }   
        
     
@@ -267,10 +264,10 @@ public class PictureComponent extends AdaptPictJComponent{
             if (adjLocation)
                 setLocation(currBaseLocation); 
            adjSize.setSize(getSizeRatioWidth()*currBaseSize.getWidth(),getSizeRatioHeight()*currBaseSize.getHeight());
-           if (!parentPane.isMinimzed())               
+          // if (!parentPane.isMinimzed())               
                 adjSize=getMaxSize(adjSize,calcWithMotion);                                                                        
-           if (checkMin)     
-               adjSize=getMinSize(adjSize);                                                 
+          // if (checkMin)     
+              // adjSize=getMinSize(adjSize);                                                 
            adjSize.setSize(adjSize.getWidth()*(calcWithMotion?motionRatio:1), adjSize.getHeight()*(calcWithMotion?motionRatio:1));                                                        
            return adjSize;
     }
@@ -310,7 +307,8 @@ public class PictureComponent extends AdaptPictJComponent{
     public void updateSizeLocation() {                
         //updateParentSizeRatios();
         if (shown||underConst) 
-               {setSize(currBaseSize);   
+               {setSize(currBaseSize);                   
+                currentBorder();
                 repaint();
                }
     }        
@@ -336,7 +334,8 @@ public class PictureComponent extends AdaptPictJComponent{
     @Override
     public void setVisible(boolean aFlag) {
                 super.setVisible(aFlag); //To change body of generated methods, choose Tools | Templates.
-                setToolTipText(toolTipText);                
+                setToolTipText(toolTipText); 
+                currentBorder();
     }
     
     @Override
@@ -382,7 +381,7 @@ public class PictureComponent extends AdaptPictJComponent{
             
             System.out.println("NewRatioWidth:"+sizeRatioWidth+" origwidth:"+origDim.getWidth()+" newWidth:"+adjDim.getWidth());            
             updateSizeLocation();
-             constructed();
+            constructed();
 
             }
     }
@@ -413,9 +412,9 @@ public class PictureComponent extends AdaptPictJComponent{
     }
 
     @Override
-    public synchronized void setAdminEnabled(boolean adminEnabled) {        
+    public void setAdminEnabled(boolean adminEnabled) {        
         this.adminEnabled = adminEnabled;             
-        
+        currentBorder();        
     }
     
    
@@ -435,21 +434,23 @@ public class PictureComponent extends AdaptPictJComponent{
     @Override
     public void deActivate()
     {     
-         normalBorder();
+        currentBorder=normalBorder;         
+        currentBorder();
     }
     
     @Override
     public void activate()
     { 
-        setBorder(activeBorder);
+        currentBorder=activeBorder;
+        currentBorder();
     }
     
-    protected void normalBorder()
+    protected void currentBorder()
     {
-        if (isMinimzed())
+        if (isMinimzed()&&!underConst&&!isAdminEnabled())
             setBorder(null);
         else
-            setBorder(normalBorder);
+            setBorder(currentBorder);
     }
 
         @Override
@@ -557,9 +558,9 @@ public class PictureComponent extends AdaptPictJComponent{
     }
     
     protected void constructed()
-    {
-        underConst=false;        
-        normalBorder();
+    {                    
+        underConst=false;
+        currentBorder();
     }
 
     @Override

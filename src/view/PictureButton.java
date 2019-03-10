@@ -26,6 +26,7 @@ public class PictureButton extends PictureComponent {
         minWidthMultiplier=0.05;
         minHeightMultiplier=0.05;  
         normalBorder=BorderFactory.createEmptyBorder();
+        currentBorder=normalBorder;
         
     }
        

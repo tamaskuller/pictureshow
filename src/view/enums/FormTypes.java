@@ -25,6 +25,8 @@ public enum FormTypes {
                 return "Pane of Pictures";
            case INPUTFORM_PICT:
                 return "Picture";
+           case INPUTFORM_FRAME:
+                return "New Layout";
           case SAVE_FRAME:
                     return "Save frame";                                
         }

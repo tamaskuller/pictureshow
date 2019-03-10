@@ -1,0 +1,1 @@
+java -jar %~dp0\PictureShow.jar Jobs

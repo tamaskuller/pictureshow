@@ -47,7 +47,7 @@ static int onClose;
                 //MapFactoryAbs<FormTypePictCompMap,Object> mapFactory=MapCreatorFactory.getFactory(MapFactoryTypes.FORM_COMPTYPE);
                 //FormTypePictCompMap map=mapFactory.getMapping();
                 //form=new CompCreateInputForm(parent, map.get(formType));
-                form=new CompCreateInputFormV1(parentPane, formType);
+                form=new CompCreateInputFormV1((parentPane==null)?parentFrame:parentPane, formType);
                 //form=inputForm;                                                
                 formObject=form;                                       
                 break;        

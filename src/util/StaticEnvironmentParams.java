@@ -33,9 +33,10 @@ public final class StaticEnvironmentParams {
     {
         String path=null;
         switch (appHostType)
-        {case LOCAL:
+        {case IDE_RUN:
             path=Paths.get("").toAbsolutePath().toString();
             break;
+        case LOCAL:
         case REMOTE:
             String jarFile=PictureShow.class.getProtectionDomain().getCodeSource().getLocation().toString();
             path=jarFile.substring(0, jarFile.lastIndexOf("/"));

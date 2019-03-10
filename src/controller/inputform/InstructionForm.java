@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JEditorPane;
@@ -54,10 +55,10 @@ public class InstructionForm extends JFrameBaseFormAbs{
             //JScrollPane jScrollPane = new JScrollPane(jTextArea);
             System.out.println("HTMLUrl:"+StaticEnvironmentParams.getProjectPath()+StaticEnvironmentParams.REL_PATH_TO_HTML);
             URL url;
-            if (StaticEnvironmentParams.appHostType==AppHostType.LOCAL)                
+            if (StaticEnvironmentParams.appHostType==AppHostType.IDE_RUN)                
                 url = new URL("file:///"+StaticEnvironmentParams.getProjectPath()+StaticEnvironmentParams.REL_PATH_TO_HTML);
             else
-                url = new URL(StaticEnvironmentParams.getProjectPath()+StaticEnvironmentParams.REL_PATH_TO_HTML);
+                url = new URL(StaticEnvironmentParams.getProjectPath()+StaticEnvironmentParams.REL_PATH_TO_HTML);                            
             jTextArea=new JEditorPane(url);
             JScrollPane jScrollPane=new JScrollPane(jTextArea);
             add(jScrollPane);

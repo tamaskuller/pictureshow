@@ -85,16 +85,17 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         if (fullState)//||firstShow)
             {
             superPaintPict(true, motionType, checkMin);
-            minimized=false;                                  
+            minimized=false;       
+            //minOverride=false;
             }   
         if (!fullState)
             {
             minOverride=checkMin;                    
-            if (firstShow)
+           if (firstShow)
                 {
-                superPaintPict(true,motionType , true);
+                superPaintPict(true,motionType , true);                
                 superPaintPict(false,motionType , true);
-                }
+                }            
             }
         showState(true, motionType);
         firstShow=false;                
@@ -112,7 +113,9 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
                 } 
             System.out.println("paneready-sent:"+iconString);
             parentPane.update(Action.UNDERCONST_READY, this);            
-            }        
+            }       
+        
+        
     }               
 
     @Override
@@ -230,7 +233,8 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     {
         PaintRequestParams paintRequest=new PaintRequestParams(show,forced, motionType,  order, false);                
         for (PictureComponentInterface pictureComponent : pictureComponents) {
-            if (component==pictureComponent) pictureComponent.paintPict(paintRequest);
+            if (component==pictureComponent) 
+                pictureComponent.paintPict(paintRequest);            
         }                        
     }
     
@@ -247,15 +251,16 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
 
     @Override
     public synchronized void paintPict(PaintRequestParams paintRequest) {
-//        if (isMinimzed()&&!parentPane.isFullState())
-  //              superPaintPict(true,MotionTypes.FAST_FLOWING , paintRequest.checkMin);        
+        minOverride=paintRequest.checkMin; 
+        if (!paintRequest.show)            
+            super.maximize();
         super.paintPict(paintRequest); //To change body of generated methods, choose Tools | Templates.        
-//        setFullState(paintRequest.show, paintRequest.motionType, paintRequest.checkMin);
     }        
 
     private void superPaintPict(boolean show, MotionTypes motionType,boolean checkMin)
     {
         super.paintPict(new PaintRequestParams(show, true, motionType,parentPane.getComponentOrder(this) ,checkMin));        
+        minOverride=checkMin;
     }
 
     
