@@ -33,7 +33,7 @@ public class FileOperations {
                 if (!fromPath.isEmpty())
                 {
                     System.out.println("putfile:"+fromPath+"->"+toPath);
-                    if (StaticEnvironmentParams.appHostType==AppHostType.LOCAL)
+                    if (StaticEnvironmentParams.appHostType==AppHostType.LOCAL||StaticEnvironmentParams.appHostType==AppHostType.IDE_RUN)
                     {
                         FileOutputStream fileOutputStream=null;
                         File fileTo=new File(StaticEnvironmentParams.getProjectPath()+toPath);                                        

@@ -71,7 +71,7 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
     private PictContentPane pictContentPane;
     private boolean mainForm=false;
     private boolean firstShow=true;
-    private boolean dbLoadReady=false;
+    private boolean dbLoadReady=true;
 
 //    private String title;
    
@@ -106,10 +106,11 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
         this.addComponentListener(new ComponentAdapter() {
             
             @Override                        
-            public void componentResized(ComponentEvent e) {                
+            public synchronized void componentResized(ComponentEvent e) {                
                 super.componentResized(e); //To change body of generated methods, choose Tools | Templates.                                                                                          
-                updateSizeLocation();                 
+                updateSizeLocation();                             
             }
+                        
             
             });                    
 
@@ -127,6 +128,7 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
                 super.windowOpened(e); //To change body of generated methods, choose Tools | Templates.                
                 updateSizeLocation();                
             }
+
             
         });
     }
@@ -149,8 +151,7 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
             layeredPane.setLayer(comp, order);   
             setCompOrder(component, order);                
             repaint();
-            updateSizeLocation();
-            
+            updateSizeLocation();            
             //showHideComponent(component, null,true,true, false, getComponentZOrder(component));            
             }
 //      
@@ -168,6 +169,41 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
         //showHideComponents((fullState)?true:false, true);
             
     }
+
+    
+    @Override
+    public void removePictPane(PicturePaneInterface picturePane) {
+        removeComponent(picturePane);        
+        this.picturePanes.remove(picturePane);  
+        this.picturePanesUnderConst.remove(picturePane);
+        Collections.sort(picturePanes);
+    }
+    
+    public void removeComponent(Object component)
+    {
+        if (component instanceof Component)        
+        {
+            Component comp=(Component) component;
+            remove(comp);
+            JLayeredPane layeredPane=getLayeredPane();                            
+            layeredPane.remove(comp); 
+            updateSizeLocation();  
+        }
+    }
+
+    @Override
+    public void addButton(PictureComponentInterface component, int order) {
+    }
+
+    @Override
+    public void addPictComponent(PictureComponentInterface component, int order) {            
+    }    
+
+    @Override
+    public void removePictComponent(PictureComponentInterface component) {    
+    }    
+
+    
 
     @Override
     public void setVisible(boolean b) {
@@ -214,12 +250,12 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
 
     @Override
     public synchronized void updateSizeLocation() {             
-        setFrameSizeRatios();
+        setFrameSizeRatios();       
         calcSizeRatios();
         for (PicturePaneInterface picturePane : picturePanes) {            
             picturePane.updateSizeLocation();           
         }
-        //repaint();
+        repaint();
     }
     
        
@@ -245,6 +281,55 @@ private void calcSizeRatios()
     }
         
     
+    @Override
+    public void update(Action action, Object subject) {   
+        System.out.println("updateFrame"+firstShow+isUnderConst());
+        if (action==Action.ADMIN_DISABLED&&!isUnderConst()&&adminSwitch)
+            {               
+            if (adminEnabled)
+                setSize(currBaseSize);                
+            else                
+                setCurrBaseSizeLocToCurrSizeLoc(isAdminEnabled());                                                                                                                                       
+            updateSizeLocation();                               
+            adminSwitch=false;
+            }        
+        dbLoadReady=(action==Action.DB_LOAD_FRAME)?true:dbLoadReady;
+        if (firstShow)
+           {
+           if (action==Action.UNDERCONST_READY &&subject instanceof PicturePaneInterface)
+                {
+                picturePanesUnderConst.remove((PicturePaneInterface)subject);
+                System.out.println("paneready-get:"+((PicturePaneInterface) subject).getIconString()+dbLoadReady);                             
+                firstShowActions();
+                }
+           if (action==Action.FRAME_READY)
+               firstShowActions();           
+           }
+        
+    }
+    
+    private void firstShowActions()
+    {
+        if (!isUnderConst()&&picturePanesUnderConst.isEmpty()&&dbLoadReady)  
+            {
+            if (mainForm)
+                FormFactoryV1.createForm(FormTypes.INSTRUCTION_FORM, null, this, null);            
+            firstShow=false;                    
+            popupMenu.setMenuActive(true);
+            }        
+    }
+
+    
+    @Override
+    public void dbLoad() {
+        dbLoadReady=false;
+    }
+
+    @Override
+    public void setMainForm(boolean mainForm) {
+        this.mainForm = mainForm;
+    }
+
 
    @Override
     public boolean isFullState() {
@@ -267,33 +352,6 @@ private void calcSizeRatios()
         
     }
 
-    @Override
-    public void update(Action action, Object subject) {   
-        System.out.println("updateFrame"+firstShow+isUnderConst());
-        if (action==Action.ADMIN_DISABLED&&!isUnderConst()&&adminSwitch)
-            {               
-            if (adminEnabled)
-                setSize(currBaseSize);                
-            else                
-                setCurrBaseSizeLocToCurrSizeLoc(isAdminEnabled());                                                                                                                                       
-            updateSizeLocation();                               
-            adminSwitch=false;
-            }        
-        dbLoadReady=(action==Action.DB_LOAD_FRAME)?true:dbLoadReady;
-        if (action==Action.UNDERCONST_READY&&firstShow&&subject instanceof PicturePaneInterface)
-            {
-            picturePanesUnderConst.remove((PicturePaneInterface)subject);
-            System.out.println("paneready-get:"+((PicturePaneInterface) subject).getIconString()+dbLoadReady);
-            if (!isUnderConst()&&picturePanesUnderConst.isEmpty()&&dbLoadReady)               
-                {       
-                if (mainForm)
-                    FormFactoryV1.createForm(FormTypes.INSTRUCTION_FORM, null, this, null);            
-                firstShow=false;                    
-                popupMenu.setMenuActive(true);
-                }                   
-            }
-    }
-    
     
     
     @Override
@@ -333,9 +391,9 @@ private class PictContentPane extends Container{
         @Override
         public void paint(Graphics g) {
             if (image!=null)
-                g.drawImage(image.getImage(),1, 1, getWidth()-2, getHeight()-2, new Color(0,0,0,125), null);
+                g.drawImage(image.getImage(),1, 1,(int) (getSize().getWidth()-2), (int) (getSize().getHeight()-2), new Color(0,0,0,125), null);                    
             super.paint(g); //To change body of generated methods, choose Tools | Templates.
-                
+            
         }
 
             
@@ -382,18 +440,7 @@ private class PictContentPane extends Container{
         adjSize.setSize(d.getWidth()*sizeRatioContPaneWidth, d.getHeight()*sizeRatioContPaneHeight);        
         super.setSize(adjSize); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
-
-    @Override
-    public void addButton(PictureComponentInterface component, int order) {
-    }
-
-    @Override
-    public void addPictComponent(PictureComponentInterface component, int order) {    
-    }    
-
-    
+        
     
     @Override
     public synchronized void setCurrBaseSizeLocToCurrSizeLoc(boolean adminEnabled) {      
@@ -412,13 +459,12 @@ private class PictContentPane extends Container{
         this.sizeRatioContPaneWidth=frameSize.getWidth()/getSize().getWidth();
         this.sizeRatioContPaneHeight=frameSize.getHeight()/getSize().getHeight();          
     }
-
     
     
     @Override
     public void adjCurrBaseLocation(double addX, double addY) {
     }
-    
+
     
    
 
@@ -430,7 +476,8 @@ private class PictContentPane extends Container{
     
     
     @Override
-    public void adjCurrBaseSize(double addWidth, double addHeight, boolean adjustLoc) {                
+    public void adjCurrBaseSize(double addWidth, double addHeight, boolean adjustLoc) { 
+        
     }
 
     @Override
@@ -620,10 +667,6 @@ private class PictContentPane extends Container{
         return isResizable();
     }
 
-    @Override
-    public void setMainForm(boolean mainForm) {
-        this.mainForm = mainForm;
-    }
     
         @Override
     public void minimize() {
@@ -634,6 +677,8 @@ private class PictContentPane extends Container{
     public void maximize() {
         setVisible();
     }
+
+    
 
     
 }

@@ -64,6 +64,33 @@ public class PictureButton extends PictureComponent {
         minHeight=min;
     }
 
+    @Override
+    public synchronized void adjCurrBaseSize(double addWidth, double addHeight, boolean adjustLoc) {
+        double addSize=(addWidth!=0)?addWidth:addHeight;
+        super.adjCurrBaseSize(addSize, addSize, adjustLoc); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double getLocRatioHeight() {
+        return super.getLocRatioHeight(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double getLocRatioWidth() {   
+        return getMoveFactor()*super.getLocRatioWidth(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public synchronized void setCurrBaseSizeLocToCurrSizeLoc(boolean adminEnabled) {                
+        locRatioWidth=locRatioWidth/getMoveFactor();
+        super.setCurrBaseSizeLocToCurrSizeLoc(adminEnabled); //To change body of generated methods, choose Tools | Templates.                
+    }
+
+    private double getMoveFactor()
+    {
+        return 1;
+       //return parentPane.getAdjCurrSize(true, true, true).getWidth()/parentPane.getAdjCurrSize(true, true, false).getWidth();
+    }
    
     
     

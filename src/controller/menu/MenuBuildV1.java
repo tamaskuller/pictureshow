@@ -40,9 +40,6 @@ public class MenuBuildV1 {
         MenuBuildStructV1 menuStructBuild=new MenuBuildStructV1(popupMenu,menuMap, menuItemMap,menuActions);                
         menuActions.setMenuItemMap(menuStructBuild.getMenuItemMap());        
         menuActions.setMenuMap(menuStructBuild.getMenuMap());                                
-        
-        
-        
     }              
     
     public JPopupMenuAdj getMenuBar() {

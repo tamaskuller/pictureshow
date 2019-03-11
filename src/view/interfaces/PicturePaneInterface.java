@@ -17,6 +17,8 @@ public interface PicturePaneInterface extends PictureComponentInterface,MultiCom
      public void addButton(PictureComponentInterface component, int order);
       public void addPictComponent(PictureComponentInterface component, int order);
     public void addPictPane(PicturePaneInterface pictPane, int order);
+    public void removePictComponent(PictureComponentInterface pictureComponent);
+    public void removePictPane(PicturePaneInterface picturePane);
       public List<AttachedGettersInt> getPictureComponents();      
      @Override
        public String getIconString();

@@ -304,10 +304,11 @@ public synchronized PictureFrameInterface loadFrame(String name) throws Nonexist
                             .adjMaxSize(true)
                             .toCenter(true)
                             .build();
-               PictureFrame pictureFrame=FormFactoryV1.createForm(FormTypes.PICTUREFRAME,null,null, params);
+               PictureFrameInterface pictureFrame=FormFactoryV1.createForm(FormTypes.PICTUREFRAME,null,null, params);
+               pictureFrame.dbLoad();               
                pictureFrame.setImage(ImageFactoryV1.getImage(DataSourceTypes.DISK, null, pictureFrameTable.getImageName()));               
-                    for (PicturePaneTable picturePaneTable : pictureFrameTable.getPicturePaneTableCollection()) {
-                        loadPane(picturePaneTable, pictureFrame);                        
+               for (PicturePaneTable picturePaneTable : pictureFrameTable.getPicturePaneTableCollection()) {                        
+                        loadPane(picturePaneTable, pictureFrame, true);                                                
                         }                        
                 notifyObserver(Observer.Action.DB_LOAD_FRAME); 
                 //pictureFrame.showState(true, null);                
@@ -319,7 +320,7 @@ public synchronized PictureFrameInterface loadFrame(String name) throws Nonexist
         return null;
     }
 
-public void loadPane(PicturePaneTable picturePaneTable, PicturePaneInterface picturePaneParent) {    
+public void loadPane(PicturePaneTable picturePaneTable, PicturePaneInterface picturePaneParent, boolean firstLevelPane) {    
                         PictureComponentTable pictCompTablePane=null;
                         for (PictureComponentTable pictureComponentTable : picturePaneTable.getPictureComponentTableCollection()) {
                             if (ShortToBoolean(pictureComponentTable.getIsPaneComponent()))
@@ -335,7 +336,7 @@ public void loadPane(PicturePaneTable picturePaneTable, PicturePaneInterface pic
                                 }
                             }
                             for (PicturePaneTable picturePaneTable1 : picturePaneTable.getPicturePaneTableCollection()) {
-                                    loadPane(picturePaneTable1,picturePane);    
+                                    loadPane(picturePaneTable1,picturePane, false);    
                                     System.out.println("pictpanesub:"+picturePaneTable.toString());
                             }                                                            
                             for (PictureComponentTable pictureComponentTable : picturePaneTable.getPictureComponentTableCollection()) {                                        
@@ -344,11 +345,14 @@ public void loadPane(PicturePaneTable picturePaneTable, PicturePaneInterface pic
                                             loadComponent(picturePane,pictureComponentTable);                                            
                                         }        
                             }
-                            if (picturePane.isFullState())
-                                picturePane.maximize();
+                            if (!firstLevelPane)
+                                picturePane.showState(true, null);                                
                             else
-                                picturePane.minimize();
-                            }                        
+                                if (picturePane.isFullState())
+                                    picturePane.maximize();
+                                else
+                                    picturePane.minimize();                                
+                            }                                    
                     }
 
 

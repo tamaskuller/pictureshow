@@ -84,8 +84,9 @@ static int onClose;
                 pictureFrame.setPopupMenu(menuInit.getMenuBar());
                 pictureFrame.addMouseListener(MenuMouseListenerBuildV1.getInstance().buildMouseListener(menuInit.getMenuBar()));     
                 form=pictureFrame;    
-                formObject=pictureFrame;                
-                PictDBActionsV1.getInstance().addObserver(pictureFrame);
+                formObject=pictureFrame;    
+                observerForm=pictureFrame;    
+                PictDBActionsV1.getInstance().addObserver(pictureFrame);               
                 if (mainForm==null)
                     {
                     mainForm=pictureFrame;
@@ -102,6 +103,7 @@ static int onClose;
         SwingUtilities.invokeLater(new Runnable (){                    
                     public void run() {
                         form.setVisible(true);                        
+                        observerForm.update(Action.FRAME_READY, null);
                         System.out.println("formstarted");                                            
                     }
                 });                 

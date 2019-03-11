@@ -45,12 +45,12 @@ public class PictureComponent extends AdaptPictJComponent{
     protected final static int DEFAULT_FONT_STLYE=Font.BOLD;
     protected final static int BORDER_SECURE_DIST=1;
     protected Border activeBorder=BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.RED, Color.PINK);    
-    protected Border normalBorder=BorderFactory.createLoweredBevelBorder();
+    protected Border normalBorder=BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.LIGHT_GRAY, Color.GRAY);
     protected Border currentBorder=normalBorder;
     
     protected double minWidth;     
     protected double minHeight;                             
-    protected double minWidthMultiplier=0.1;     
+    protected double minWidthMultiplier=0.2;     
     protected double minHeightMultiplier=0.1;                             
     
     
@@ -68,7 +68,7 @@ public class PictureComponent extends AdaptPictJComponent{
     
     protected Point currBaseLocation;
     protected Point origLocation;
-    protected Point lastLoc;
+    protected Point lastLoc;        
     
     protected double sizeParentRatioWidth=1;
     protected double sizeParentRatioHeight=1;   
@@ -82,15 +82,18 @@ public class PictureComponent extends AdaptPictJComponent{
     protected String iconString;  
     protected String toolTipText;      
     protected Point iconStringPos;
-    private static final int DEF_FONT_SIZE=30;
-    private int actFontSize;    
+    protected double icon_x_indent_ratio=0.0;
+    protected double icon_y_indent_ratio=0.0;
+        
     private Timer timer;    
     private Timer timerPending;   
     protected boolean underConst=false;
     protected boolean shown=false;
     protected boolean adminEnabled;    
     protected boolean minimized=true;        
-    protected boolean minOverrideMotion=false;        
+    protected boolean activated=false;
+    protected boolean firstShow=true;
+    
             
     private List<PaintRequestParams> paintRequests;    
     protected JPopupMenuAdj popupMenu;
@@ -112,14 +115,13 @@ public class PictureComponent extends AdaptPictJComponent{
         this.iconString=params.iconString;
         this.toolTipText=params.toolTipText;
         this.currBaseSize=new Dimension();
-        this.currBaseSize.setSize(params.getWidth(), params.getHeight());
+        this.currBaseSize.setSize((params.getWidth()),params.getHeight());        
+        System.out.println("size-width:"+params.getWidth());
         this.adminEnabled=params.adminEnabled;
         this.origSize=currBaseSize;                
         //this.setVisible(true);             
         this.paintRequests=new ArrayList<>();                       
-        System.out.println("OrigWidth:"+currBaseSize.getWidth());        
-
-
+        System.out.println("OrigWidth:"+currBaseSize.getWidth());          
 
     }
 
@@ -128,11 +130,24 @@ public class PictureComponent extends AdaptPictJComponent{
         this.parentPane=parent;             
     }            
 
-                                             
+    
+    private void FirstShowActions()
+    {
+        setMinDimensions(true, true);                 
+        sizeRatioWidth=1/parentPane.getSizeRatioWidth();
+        sizeRatioHeight=1/parentPane.getSizeRatioHeight();
+        double actualWidth=(minWidth>currBaseSize.getWidth()?minWidth:currBaseSize.getWidth());
+        double actualHeight=(minHeight>currBaseSize.getHeight()?minHeight:currBaseSize.getHeight());        
+        currBaseSize.setSize(actualWidth,actualHeight);        
+    }    
+    
    
     @Override
     public void paintPict(PaintRequestParams paintRequest)             
-            {                           
+            {                       
+                if (firstShow)
+                    FirstShowActions();
+                firstShow=false;                    
                 if ((paintRequests.isEmpty()&&!shown==paintRequest.show)||paintRequest.forced)
                     paintRequests.add(paintRequest);
                 if (timerPending==null)
@@ -160,8 +175,10 @@ public class PictureComponent extends AdaptPictJComponent{
                         }                                                     
         }
 
+    
    protected void animator(PaintRequestParams paintRequest) {
                     underConst=true;
+                    
                     MotionTypes motionType=((paintRequest.motionType==null)?defaultMotionType:paintRequest.motionType);
                     int steps=motionTypeMaps.get(motionType).getSteps();                    
                     int waitTime=motionTypeMaps.get(motionType).getWaitTime();
@@ -205,12 +222,8 @@ public class PictureComponent extends AdaptPictJComponent{
         
             if (image!=null&&(!isMinimzed()||underConst||shown))
                 grphcs.drawImage(image.getImage(), BORDER_SECURE_DIST,BORDER_SECURE_DIST, getWidth()-2*BORDER_SECURE_DIST, getHeight()-2*BORDER_SECURE_DIST,new Color(0, 0, 0, 125), null);        
-            Font font=grphcs.getFont();        
-            grphcs.setFont(new Font(font.getFontName(),DEFAULT_FONT_STLYE , DEF_FONT_SIZE));        
-            Dimension coverBox=new Dimension((int)getWidth(),(int)minHeight);
-            this.actFontSize=FontFunctions.getActFontSize(coverBox,grphcs, DEF_FONT_SIZE, iconString);                       
-            grphcs.setFont(new Font(font.getFontName(),DEFAULT_FONT_STLYE , this.actFontSize));                
-            FontFunctions.drawHighlightedString(coverBox,grphcs, Color.BLUE, Color.WHITE, iconString);  
+            Dimension coverBox=new Dimension((int) ((getWidth()<minWidth)?getWidth():minWidth),(int)minHeight);
+            this.iconStringPos=FontFunctions.drawHighlightedString(coverBox,grphcs,iconString,DEFAULT_FONT_STLYE, Color.BLUE, Color.WHITE, icon_x_indent_ratio, icon_y_indent_ratio);    
   //          }
     }
 
@@ -252,7 +265,7 @@ public class PictureComponent extends AdaptPictJComponent{
     public void setSize(Dimension d) {  
                 Dimension adjSize=getAdjCurrSize(true,true,true);                                 
                 super.setSize(adjSize); //To change body of generated methods, choose Tools | Templates.                    
-                this.iconStringPos=new Point((int)minWidth/5,(int)minHeight/2);        
+                //this.iconStringPos=new Point((int)minWidth/5,(int)minHeight/2);        
     }   
        
     
@@ -274,8 +287,11 @@ public class PictureComponent extends AdaptPictJComponent{
 
     
     protected void setMinDimensions(boolean checkMin, boolean adjLocation) {
-        minWidth=parentPane.getAdjCurrSize(checkMin, adjLocation, false).getWidth()*minWidthMultiplier;
-        minHeight=parentPane.getAdjCurrSize(checkMin, adjLocation, false).getHeight()*minHeightMultiplier;
+        if (parentPane!=null)
+            {
+            minWidth=parentPane.getAdjCurrSize(checkMin, adjLocation, false).getWidth()*minWidthMultiplier;
+            minHeight=parentPane.getAdjCurrSize(checkMin, adjLocation, false).getHeight()*minHeightMultiplier;
+            }
    }
 
     
@@ -305,12 +321,12 @@ public class PictureComponent extends AdaptPictJComponent{
         
     @Override
     public void updateSizeLocation() {                
-        //updateParentSizeRatios();
-        if (shown||underConst) 
-               {setSize(currBaseSize);                   
+        //if (shown||underConst) 
+        //       {
+                setSize(currBaseSize);                      
                 currentBorder();
                 repaint();
-               }
+//               }
     }        
         
        @Override
@@ -335,20 +351,26 @@ public class PictureComponent extends AdaptPictJComponent{
     public void setVisible(boolean aFlag) {
                 super.setVisible(aFlag); //To change body of generated methods, choose Tools | Templates.
                 setToolTipText(toolTipText); 
-                currentBorder();
+                
+//                double currentWidth=minWidth>currBaseSize.getWidth()?minWidth:currBaseSize.getWidth();
+//                double currentHeight=minHeight>currBaseSize.getHeight()?minHeight:currBaseSize.getHeight();
+//                sizeRatioWidth=currBaseSize.getWidth()/currentWidth;
+//                sizeRatioHeight=currBaseSize.getHeight()/currentHeight;
+                
+               // currentBorder();
     }
     
     @Override
     public synchronized void setCurrBaseSizeLocToCurrSizeLoc(boolean adminEnabled) {   
         //updateParentSizeRatios();                    
-        Dimension adjSize=(adminEnabled)?getSize():getAdjCurrSize(true,false,false);                               
+        Dimension adjSize=(adminEnabled)?getAdjCurrSize(true,false,false):getAdjCurrSize(true,false,false);                               
         System.out.println("parentsizeratioheight:"+parentPane.getSizeRatioHeight());
        System.out.println("adjsize:"+adjSize);
         sizeRatioHeight=sizeRatioWidth=1;        
         adjSize.setSize(adjSize.getWidth()/(adminEnabled?getSizeRatioWidth():1)/1,adjSize.getHeight()/(adminEnabled?getSizeRatioHeight():1)/1);       
-        Point adjLocation=(adminEnabled)?getLocation():getAdjCurrLocation(currBaseLocation);
+        Point adjLocation=(adminEnabled)?getAdjCurrLocation(currBaseLocation):getAdjCurrLocation(currBaseLocation);
         locRatioWidth=locRatioHeight=1;
-        adjLocation.setLocation(adjLocation.getX()/(adminEnabled?getSizeRatioWidth():1), adjLocation.getY()/(adminEnabled?getSizeRatioHeight():1));
+        adjLocation.setLocation(adjLocation.getX()/(adminEnabled?getLocRatioWidth():1), adjLocation.getY()/(adminEnabled?getLocRatioHeight():1));
         System.out.println("currbaseSizeprev:"+currBaseSize);
         currBaseLocation=adjLocation;
         currBaseSize=adjSize;                
@@ -433,24 +455,23 @@ public class PictureComponent extends AdaptPictJComponent{
     
     @Override
     public void deActivate()
-    {     
-        currentBorder=normalBorder;         
+    {                   
+        activated=false;
         currentBorder();
     }
     
     @Override
     public void activate()
-    { 
-        currentBorder=activeBorder;
+    {   
+        activated=true;
+        currentBorder=activeBorder;        
         currentBorder();
     }
     
     protected void currentBorder()
     {
-        if (isMinimzed()&&!underConst&&!isAdminEnabled())
-            setBorder(null);
-        else
-            setBorder(currentBorder);
+        currentBorder=(activated)? currentBorder: (isMinimzed()&&!underConst)? null: normalBorder;
+        setBorder(currentBorder);       
     }
 
         @Override
@@ -472,9 +493,7 @@ public class PictureComponent extends AdaptPictJComponent{
     public void maximize() {
         paintPict(new PaintRequestParams(true, true, defaultMotionType, parentPane.getComponentOrder(this), false));
     }
-                
-    
-    
+                        
 
     @Override
     public void mouseEnterred() {
@@ -538,7 +557,7 @@ public class PictureComponent extends AdaptPictJComponent{
 
     @Override
     public void Delete() {
-        parentPane.getPictureComponents().remove(this);
+        parentPane.removePictComponent(this);
         setVisible(false);
     }
 
@@ -559,7 +578,7 @@ public class PictureComponent extends AdaptPictJComponent{
     
     protected void constructed()
     {                    
-        underConst=false;
+        underConst=false;        
         currentBorder();
     }
 
@@ -578,5 +597,18 @@ public class PictureComponent extends AdaptPictJComponent{
         return ((Integer) this.getParentPane().getComponentOrder(this)).compareTo(((Integer) o.getParentPane().getComponentOrder(o)));
         
     }
+
+    @Override
+    public Dimension getCurrBaseSize() {
+        return currBaseSize;
+    }
+
+    @Override
+    public Point getCurrBaseLocation() {
+        return currBaseLocation;
+    }
+    
+    
+    
 }
                    

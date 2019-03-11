@@ -13,7 +13,7 @@ import view.util.Observer;
  *
  * @author Kuller Tamas
  */
-public interface PictureComponentInterface extends AutoShapeComponentInt,AutoShapeCompResizeableInt,ActiveComponentInt, AdministratableInt, AttachedGettersInt<Object>, ImageInt<NamedImageInt>,MenuInterface, Comparable<PictureComponentInterface> {
+public interface PictureComponentInterface extends AutoShapeComponentInt, AutoShapeCompGettersInt,AutoShapeCompResizeableInt,ActiveComponentInt, AdministratableInt, AttachedGettersInt<Object>, ImageInt<NamedImageInt>,MenuInterface, Comparable<PictureComponentInterface> {
      public void paintPict(PaintRequestParams paintRequest);  
      public PicturePaneInterface getParentPane();
      //public Color getResizeBorderColor();   
@@ -21,12 +21,9 @@ public interface PictureComponentInterface extends AutoShapeComponentInt,AutoSha
      public String getIconString();
      public void setVisible();
      public void setInVisible();
+     
      public void setImagePath(String imagePath);
      public void removeImage();
      public boolean isUnderConst();
-     public boolean isMinimzed();
-     
-     
-     //public void activateComponent();
-    //public void deActivateComponent();
+     public boolean isMinimzed();  
 }

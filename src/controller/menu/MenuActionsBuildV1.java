@@ -130,7 +130,7 @@ public class MenuActionsBuildV1 implements MenuActionsInt{
             
             @Override
             public void actionPerformed(ActionEvent e) {                                  
-                FormFactoryV1.createForm(getType(menuItem),(menuItem!=MenuItemEnumsV1.NEW_LAYOUT)?(PicturePaneInterface) popupMenu.getInvoker():null,pictureFrame,null);                
+                FormFactoryV1.createForm(getType(menuItem),(menuItem!=MenuItemEnumsV1.NEW_LAYOUT)?(PicturePaneInterface) popupMenu.getInvoker():null,pictureFrame,null);                                
                 }                
             };
             break; 

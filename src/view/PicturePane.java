@@ -42,8 +42,7 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
    protected MotionTypes reOrderMotionType=MotionTypes.FAST_FLOWING;   
    protected boolean fullState;         
    protected Dimension fullStateCurrBaseSize;
-    protected int sizeRefreshCounter=0;    
-    private boolean firstShow=true;
+    protected int sizeRefreshCounter=0;        
     private boolean minOverride=true;   
     
    
@@ -57,15 +56,18 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         this.button=null;  
         this.shown=false;
         this.underConst=false;               
+        this.icon_x_indent_ratio=0.3;
+        this.icon_y_indent_ratio=0.3;    
         //this.resizeBorderColor=Color.BLUE;     
         activeBorder=BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.BLUE, Color.CYAN);    
         System.out.println("Width:"+getWidth());                
         minWidthMultiplier=0.3; 
         this.fullState=fullState;
-        System.out.println("initfullstate:"+fullState);
         
-                        
+        System.out.println("initfullstate:"+fullState);
     }
+
+    
 
     
     
@@ -84,7 +86,7 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         this.fullState = fullState;                                        
         if (fullState)//||firstShow)
             {
-            superPaintPict(true, motionType, checkMin);
+            superPaintPict(true,true, motionType, checkMin);
             minimized=false;       
             //minOverride=false;
             }   
@@ -93,12 +95,13 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
             minOverride=checkMin;                    
            if (firstShow)
                 {
-                superPaintPict(true,motionType , true);                
-                superPaintPict(false,motionType , true);
+                superPaintPict(true,true,motionType , true);                
+                superPaintPict(false,true,motionType , true);
                 }            
-            }
-        showState(true, motionType);
+            }        
         firstShow=false;                
+        showState(true, motionType);        
+        
     }
   
     @Override
@@ -109,7 +112,7 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
             if (!fullState&&minimized==false)                
                 {                
                 minimized=true; 
-                superPaintPict(false, defaultMotionType, true);
+                superPaintPict(false, true,defaultMotionType, true);
                 } 
             System.out.println("paneready-sent:"+iconString);
             parentPane.update(Action.UNDERCONST_READY, this);            
@@ -117,7 +120,7 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         
         
     }               
-
+    
     @Override
     protected void constructed() {
         super.constructed(); //To change body of generated methods, choose Tools | Templates.
@@ -170,14 +173,7 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     }   
 
     
-    
-    @Override
-    public int getComponentOrder(Object component) {
-        if (component instanceof Component)
-            return getComponentZOrder((Component) component);                    
-        return 0;
-    }
-    
+        
     public void addComponent(Object component, int order)
     {
         if (component instanceof Component)
@@ -187,6 +183,40 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
             }
         System.out.println("ADD"+component.toString());         
     }
+    
+    @Override
+    public void addButton(PictureComponentInterface component, int order)
+    {
+        addPictComponent(component, 0);
+        this.button=component;               
+    }                            
+    
+    
+    @Override
+    public void addPictComponent(PictureComponentInterface component, int order)
+    {
+            this.pictureComponents.add(component);                            
+            addComponent(component, order);                      
+    }
+    
+    
+    @Override
+    public void addPictPane(PicturePaneInterface component, int order) {
+            addPictComponent(component, order);            
+    }
+
+    @Override
+    public void removePictComponent(PictureComponentInterface pictureComponent) {
+        pictureComponents.remove(pictureComponent);
+        Collections.sort(pictureComponents);
+    }
+
+    @Override
+    public void removePictPane(PicturePaneInterface picturePane) {
+        removePictComponent(picturePane);
+    }
+    
+    
     
     private int adjCompOrder(Object component, int order) {
         if (component==button||getComponentCount()==1)
@@ -209,24 +239,12 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     }
     
     @Override
-    public void addPictComponent(PictureComponentInterface component, int order)
-    {
-            this.pictureComponents.add(component);                            
-            addComponent(component, order);                      
+    public int getComponentOrder(Object component) {
+        if (component instanceof Component)
+            return getComponentZOrder((Component) component);                    
+        return 0;
     }
     
-    @Override
-    public void addButton(PictureComponentInterface component, int order)
-    {
-        addPictComponent(component, 0);
-        this.button=component;               
-    }                            
-    
-    @Override
-    public void addPictPane(PicturePaneInterface component, int order) {
-            addPictComponent(component, order);            
-    }
-
     
     @Override
     public void showHideComponent(Object component ,MotionTypes motionType, boolean show, boolean forced, int order)
@@ -257,27 +275,26 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         super.paintPict(paintRequest); //To change body of generated methods, choose Tools | Templates.        
     }        
 
-    private void superPaintPict(boolean show, MotionTypes motionType,boolean checkMin)
+    private void superPaintPict(boolean show,boolean forced, MotionTypes motionType,boolean checkMin)
     {
-        super.paintPict(new PaintRequestParams(show, true, motionType,parentPane.getComponentOrder(this) ,checkMin));        
+        super.paintPict(new PaintRequestParams(show, forced, motionType,parentPane.getComponentOrder(this) ,checkMin));        
         minOverride=checkMin;
     }
 
-    
-    
-    
-    public void setCompOrderMotion(Object component, int order,MotionTypes motionType)
-   {                
-            showHideComponent(component,motionType,false,true,getComponentOrder(component));                
-            showHideComponent(component,motionType,true, true, adjCompOrder(component, order));                    
-            Collections.sort(pictureComponents);
-            
-    }
+              
     
     @Override
     public void activateComponent(Object component, MotionTypes motionType)
     {        
         setCompOrderMotion(component, 0, motionType);
+    }
+    
+     private void setCompOrderMotion(Object component, int order,MotionTypes motionType)
+   {                
+            showHideComponent(component,motionType,false,true,getComponentOrder(component));                
+            showHideComponent(component,motionType,true, true, adjCompOrder(component, order));                    
+            Collections.sort(pictureComponents);
+            
     }
         
     private void buttonClicked()
@@ -338,16 +355,7 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     }
 
 
-    @Override
-    public Dimension getCurrBaseSize() {
-        return currBaseSize;
-    }
-
-    @Override
-    public Point getCurrBaseLocation() {
-        return currBaseLocation;
-    }
-
+    
     @Override
     public Object getGetters() {          
         return this.picturePaneGetters;
@@ -387,15 +395,19 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         float transparency=TRANSPARENCY;
         if (isAdminEnabled())
             transparency=0.8f;
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));                
-        super.paint(g); //To change body of generated methods, choose Tools | Templates.                
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));                        
+        super.paint(g); //To change body of generated methods, choose Tools | Templates.                        
+        
     }
 
     @Override
     public void Delete() {
-        parentPane.getPictureComponents().remove(this);
+        parentPane.removePictPane(this);
         setVisible(false);       
     }
+    
+    
+    
 
       @Override
     public Dimension getAdjCurrSize(boolean checkMin, boolean adjLocation, boolean calcWithMotion) {

@@ -19,5 +19,6 @@ public interface PictureFrameInterface extends PicturePaneInterface,Administrata
     public List<PicturePaneInterface> getPicturePanes();   
     public boolean isActivated();
     public void setMainForm(boolean mainForm);
+    public void dbLoad();
     
 }
