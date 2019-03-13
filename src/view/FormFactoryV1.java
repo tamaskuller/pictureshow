@@ -36,7 +36,7 @@ static PictureFrameInterface mainForm;
 static int onClose;
 
     public static <F> F createForm(FormTypes formType, PicturePaneInterface parentPane,PictureFrameInterface parentFrame, JFrameBaseFormParams baseFormParams) {
-        
+        boolean emptyForm=false;
         onClose=WindowConstants.DISPOSE_ON_CLOSE;                    
         switch (formType)
         {                        
@@ -76,10 +76,14 @@ static int onClose;
                 //form=(JFrame) observerForm;
                 //parentFrame.addObserver(observerForm);
                 break;
+            case PICTUREFRAME_EMPTY:
+                emptyForm=true;
             case PICTUREFRAME:
                 PictureFrame pictureFrame=new PictureFrame(baseFormParams); 
                 PictureFrameGet pictureFrameGet=new PictureFrameGet(pictureFrame);
                 pictureFrame.setGetters(pictureFrameGet);
+                if (emptyForm)
+                    pictureFrame.setDbLoadReady(true);
                 MenuBuildV1 menuInit=new MenuBuildV1(pictureFrame);         
                 pictureFrame.setPopupMenu(menuInit.getMenuBar());
                 pictureFrame.addMouseListener(MenuMouseListenerBuildV1.getInstance().buildMouseListener(menuInit.getMenuBar()));     

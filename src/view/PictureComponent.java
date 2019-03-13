@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,6 +48,8 @@ public class PictureComponent extends AdaptPictJComponent{
     protected Border activeBorder=BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.RED, Color.PINK);    
     protected Border normalBorder=BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.LIGHT_GRAY, Color.GRAY);
     protected Border currentBorder=normalBorder;
+    protected Color bckColor=Color.WHITE;
+    protected Color fontColor=Color.BLACK;
     
     protected double minWidth;     
     protected double minHeight;                             
@@ -58,7 +61,8 @@ public class PictureComponent extends AdaptPictJComponent{
     protected String imagePath=null;    
     
     protected MotionTypes adminMotionType=MotionTypes.SIMPLE;
-    protected MotionTypes defaultMotionType;
+    protected MotionTypes minMaxMotionType=MotionTypes.FAST_FLOWING;    
+    protected MotionTypes defaultMotionType;    
     protected MapInterface<MotionTypes,AnimParams> motionTypeMaps;    
     
     protected Dimension origSize;    
@@ -82,8 +86,8 @@ public class PictureComponent extends AdaptPictJComponent{
     protected String iconString;  
     protected String toolTipText;      
     protected Point iconStringPos;
-    protected double icon_x_indent_ratio=0.0;
-    protected double icon_y_indent_ratio=0.0;
+    protected double icon_x_indent_ratio=0.1;
+    protected double icon_y_indent_ratio=0.1;
         
     private Timer timer;    
     private Timer timerPending;   
@@ -93,7 +97,7 @@ public class PictureComponent extends AdaptPictJComponent{
     protected boolean minimized=true;        
     protected boolean activated=false;
     protected boolean firstShow=true;
-    
+    protected int activateClickCount=1;
             
     private List<PaintRequestParams> paintRequests;    
     protected JPopupMenuAdj popupMenu;
@@ -219,11 +223,16 @@ public class PictureComponent extends AdaptPictJComponent{
     @Override    
     public void paintComponent(Graphics grphcs) {                
         super.paintComponent(grphcs); //To change body of generated methods, choose Tools | Templates.             
-        
-            if (image!=null&&(!isMinimzed()||underConst||shown))
-                grphcs.drawImage(image.getImage(), BORDER_SECURE_DIST,BORDER_SECURE_DIST, getWidth()-2*BORDER_SECURE_DIST, getHeight()-2*BORDER_SECURE_DIST,new Color(0, 0, 0, 125), null);        
-            Dimension coverBox=new Dimension((int) ((getWidth()<minWidth)?getWidth():minWidth),(int)minHeight);
-            this.iconStringPos=FontFunctions.drawHighlightedString(coverBox,grphcs,iconString,DEFAULT_FONT_STLYE, Color.BLUE, Color.WHITE, icon_x_indent_ratio, icon_y_indent_ratio);    
+        Graphics2D g=(Graphics2D) grphcs.create();                         
+        if (!isMinimzed()||underConst||shown)
+            if (image!=null)
+                g.drawImage(image.getImage(), BORDER_SECURE_DIST,BORDER_SECURE_DIST, getWidth()-2*BORDER_SECURE_DIST, getHeight()-2*BORDER_SECURE_DIST,new Color(0, 0, 0, 125), null);        
+            else if (bckColor!=null)
+                {g.setColor(bckColor);
+                g.fillRect(1, 1, getWidth()-2, getHeight()-2);
+                }
+        Dimension coverBox=new Dimension((int) ((getWidth()<minWidth)?getWidth():minWidth),(int)minHeight);
+        this.iconStringPos=FontFunctions.drawHighlightedString(coverBox,grphcs,iconString,DEFAULT_FONT_STLYE,fontColor , bckColor,icon_x_indent_ratio, icon_y_indent_ratio);    
   //          }
     }
 
@@ -448,10 +457,17 @@ public class PictureComponent extends AdaptPictJComponent{
    
 
     @Override
-    public void onClick() {
+    public void onClick() {        
         if (!isUnderConst()&&!parentPane.isUnderConst())
-            parentPane.onClick(this);
+                parentPane.onClick(this);            
     }
+
+    @Override
+    public int getActivateClickCount() {
+        return activateClickCount;
+    }
+    
+    
     
     @Override
     public void deActivate()
@@ -486,12 +502,12 @@ public class PictureComponent extends AdaptPictJComponent{
 
     @Override
     public void minimize() {
-        paintPict(new PaintRequestParams(false, true, defaultMotionType, parentPane.getComponentOrder(this), false));
+        paintPict(new PaintRequestParams(false, true, minMaxMotionType, parentPane.getComponentOrder(this), false));
     }
 
     @Override
     public void maximize() {
-        paintPict(new PaintRequestParams(true, true, defaultMotionType, parentPane.getComponentOrder(this), false));
+        paintPict(new PaintRequestParams(true, true, minMaxMotionType, parentPane.getComponentOrder(this), false));
     }
                         
 

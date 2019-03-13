@@ -39,8 +39,8 @@ public class FileOperations {
                         File fileTo=new File(StaticEnvironmentParams.getProjectPath()+toPath);                                        
                         System.out.println("putlocalfile:"+fileTo.getAbsolutePath());
                         fileFrom=new File(fromPath);    
-                        if (!fileTo.exists())
-                        {
+//                        if (!fileTo.exists())
+//                        {
                             try {                        
                                 fileOutputStream=new FileOutputStream(fileTo);
                             } catch (FileNotFoundException ex) {
@@ -52,7 +52,7 @@ public class FileOperations {
                                 System.out.println("Input file couldn't be found "+fileFrom);
                             }                     
                             copyData(fileInputStream, fileOutputStream);
-                        }
+//                        }
                         }
                     else
                         return putFileToFtp(fromPath, toPath);
@@ -74,7 +74,7 @@ public class FileOperations {
         try {
             if (url!=null)
                {
-                uRLConnection = url.openConnection();                   
+                uRLConnection = url.openConnection();                                   
                 uRLConnection.setDoOutput(true);
                 uRLConnection.setDoInput(true);
                 uRLConnection.setUseCaches(false);
@@ -99,7 +99,7 @@ public class FileOperations {
         if (uRLConnection!=null)
             {
             try {            
-                outputStream=uRLConnection.getOutputStream();                
+                outputStream=uRLConnection.getOutputStream();                           
                 } catch (IOException ex) {
                     System.out.println("Target file couldn't be opened for writing"+uRLConnection.toString());                    
                 }            

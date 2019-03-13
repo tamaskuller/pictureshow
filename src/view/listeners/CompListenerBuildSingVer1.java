@@ -61,12 +61,14 @@ public final class CompListenerBuildSingVer1 extends ListenerBuildAbs {
             
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {                                                                                                                                                   
-                component.onClick();                 
+                if (evt.getClickCount()>=component.getActivateClickCount())
+                    component.onClick();                 
                 //notifyObserver(action,method,copy , observerList);                                   
                 System.out.println("CLICKED");
                 
-            }                        
-
+            }         
+            
+            
             @Override
             public void mousePressed(MouseEvent e) {
                 if (e.isPopupTrigger()) 

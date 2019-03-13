@@ -22,7 +22,9 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import view.Menu.JPopupMenuAdj;
@@ -71,7 +73,9 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
     private PictContentPane pictContentPane;
     private boolean mainForm=false;
     private boolean firstShow=true;
-    private boolean dbLoadReady=true;
+    private boolean dbLoadReady=false;
+    private boolean adminAdjLayout=false;
+    private int defWindowCloseOp=0;
 
 //    private String title;
    
@@ -100,7 +104,7 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
         System.out.println("framesize:"+frameSize);
         this.origSize=currBaseSize;
         System.out.println("orig:"+currBaseSize);
-        currBaseSize=getSize();
+        currBaseSize=getSize();       
         
   //      this.title="";
         this.addComponentListener(new ComponentAdapter() {
@@ -114,12 +118,31 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
             
             });                    
 
-        this.addWindowListener(new WindowAdapter() {
-            
+        JFrameBaseFormAbs saveThis=this;
+        
+        this.addWindowListener(new WindowAdapter() {            
             @Override
             public void windowClosed(WindowEvent e) {
                 activated=false;                                
-                super.windowClosed(e); //To change body of generated methods, choose Tools | Templates.
+                super.windowClosed(e); //To change body of generated methods, choose Tools | Templates.                
+            }
+
+            @Override
+            public synchronized void windowClosing(WindowEvent e) {
+                if (adminAdjLayout)
+                    {
+                    String question="Did you save the changes you may have done to "+saveThis.getTitle()+((mainForm)?" and other Frames?":" Frame?");
+                    String title="Are you sure to close "+((mainForm)?"the Application?":saveThis.getTitle()+" Frame?");                    
+                    if (JOptionPane.showConfirmDialog(saveThis, question,title, JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION)                                
+                        saveThis.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);                         
+                    }
+                super.windowClosing(e); //To change body of generated methods, choose Tools | Templates.                                            
+            }
+
+            @Override
+            public void windowStateChanged(WindowEvent e) {
+                super.windowStateChanged(e); //To change body of generated methods, choose Tools | Templates.
+                
             }
             
             
@@ -129,6 +152,12 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
                 updateSizeLocation();                
             }
 
+            @Override
+            public void windowActivated(WindowEvent e) {
+                saveThis.setDefaultCloseOperation(defWindowCloseOp);                         
+                super.windowActivated(e); //To change body of generated methods, choose Tools | Templates.
+            }
+            
             
         });
     }
@@ -218,7 +247,8 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
     public boolean adminSwitched()
     {           
         setAdminEnabled(!adminEnabled);
-        adminSwitch=true;                                                       
+        adminSwitch=true;    
+        adminAdjLayout=true;
         update(Action.ADMIN_DISABLED,this);
         updateSizeLocation();
        return isAdminEnabled();
@@ -319,12 +349,12 @@ private void calcSizeRatios()
             }        
     }
 
-    
-    @Override
-    public void dbLoad() {
-        dbLoadReady=false;
+    public void setDbLoadReady(boolean dbLoadReady) {
+        this.dbLoadReady = dbLoadReady;
     }
-
+   
+    
+    
     @Override
     public void setMainForm(boolean mainForm) {
         this.mainForm = mainForm;
@@ -415,6 +445,13 @@ private class PictContentPane extends Container{
        // if (isAdminEnabled())            
             activateComponent(component,null);        
     }
+
+    @Override
+    public int getActivateClickCount() {
+        return 1;
+    }
+    
+    
 
     @Override
     public void activateComponent(Object component,MotionTypes motionType)
@@ -645,6 +682,15 @@ private class PictContentPane extends Container{
         
     }
 
+    @Override
+    public void setDefaultCloseOperation(int operation) {
+        super.setDefaultCloseOperation(operation); //To change body of generated methods, choose Tools | Templates.
+        if (defWindowCloseOp==0)
+            defWindowCloseOp=operation;
+    }
+
+    
+    
     @Override
     public List<Observer> getObservers() {
         return observers;

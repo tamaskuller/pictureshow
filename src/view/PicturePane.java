@@ -57,8 +57,9 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         this.shown=false;
         this.underConst=false;               
         this.icon_x_indent_ratio=0.3;
-        this.icon_y_indent_ratio=0.3;    
-        //this.resizeBorderColor=Color.BLUE;     
+        this.icon_y_indent_ratio=0.5;    
+        this.fontColor=Color.BLUE;
+        this.activateClickCount=2;
         activeBorder=BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.BLUE, Color.CYAN);    
         System.out.println("Width:"+getWidth());                
         minWidthMultiplier=0.3; 
@@ -84,9 +85,12 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     public void setFullState(boolean fullState, MotionTypes motionType, boolean checkMin) {        
         System.out.println("setfullstate");                
         this.fullState = fullState;                                        
+        MotionTypes motionTypeAct=motionType;
+        if (firstShow)
+            motionTypeAct=minMaxMotionType;
         if (fullState)//||firstShow)
             {
-            superPaintPict(true,true, motionType, checkMin);
+            superPaintPict(true,true, motionTypeAct, checkMin);
             minimized=false;       
             //minOverride=false;
             }   
@@ -94,13 +98,14 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
             {
             minOverride=checkMin;                    
            if (firstShow)
-                {
-                superPaintPict(true,true,motionType , true);                
-                superPaintPict(false,true,motionType , true);
+                {                    
+                superPaintPict(true,true,motionTypeAct , true);   
+                //showState(true, motionType);        
+                superPaintPict(false,true,motionTypeAct, true);
                 }            
             }        
-        firstShow=false;                
-        showState(true, motionType);        
+        showState(true, motionTypeAct);                
+        firstShow=false;   
         
     }
   

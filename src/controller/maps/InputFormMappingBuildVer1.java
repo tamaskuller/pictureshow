@@ -29,9 +29,11 @@ public final class InputFormMappingBuildVer1 extends MapFactoryAbs<InputFormPara
         InputFormParamsMap map=null;
         try {       
             boolean mandatoryImage=false;
+            boolean mandatoryTitle=true;
             switch (type)
             {            
-            case INPUTFORM_PICT:                
+            case INPUTFORM_PICT:       
+                mandatoryTitle=false;
             case INPUTFORM_BACKPICT:
                 mandatoryImage=true;
                 break;                
@@ -41,7 +43,7 @@ public final class InputFormMappingBuildVer1 extends MapFactoryAbs<InputFormPara
                     .build();
             else
             map=new InputFormParamsMap.Builder().newInstance()
-                    .addMapping(new Entry(CompParams.class.getField("title"),new InputBox("Title:", "",20, InputTypes.TEXT,true,false)))
+                    .addMapping(new Entry(CompParams.class.getField("title"),new InputBox("Title:", "",20, InputTypes.TEXT,mandatoryTitle,false)))
                     .addMapping(new Entry(CompParams.class.getField("width"),new InputBox("Width:",  "",20, InputTypes.NUMBER,true,false)))
                     .addMapping(new Entry(CompParams.class.getField("height"),new InputBox("Height:", "",20, InputTypes.NUMBER,true,false)))
                     .build();                        

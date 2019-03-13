@@ -27,6 +27,7 @@ public class PictureButton extends PictureComponent {
         minHeightMultiplier=0.05;  
         normalBorder=BorderFactory.createEmptyBorder();
         currentBorder=normalBorder;
+        bckColor=null;
         
     }
        
@@ -64,11 +65,11 @@ public class PictureButton extends PictureComponent {
         minHeight=min;
     }
 
-    @Override
-    public synchronized void adjCurrBaseSize(double addWidth, double addHeight, boolean adjustLoc) {
-        double addSize=(addWidth!=0)?addWidth:addHeight;
-        super.adjCurrBaseSize(addSize, addSize, adjustLoc); //To change body of generated methods, choose Tools | Templates.
-    }
+//    @Override
+//    public synchronized void adjCurrBaseSize(double addWidth, double addHeight, boolean adjustLoc) {
+//        double addSize=(addWidth!=0)?addWidth:addHeight;
+//        super.adjCurrBaseSize(addSize, addSize, adjustLoc); //To change body of generated methods, choose Tools | Templates.
+//    }
 
     @Override
     public double getLocRatioHeight() {
@@ -91,8 +92,17 @@ public class PictureButton extends PictureComponent {
         return 1;
        //return parentPane.getAdjCurrSize(true, true, true).getWidth()/parentPane.getAdjCurrSize(true, true, false).getWidth();
     }
+
+    @Override
+    public double getSizeRatioHeight() {
+        return super.getSizeRatioHeight()/parentPane.getSizeRatioHeight(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double getSizeRatioWidth() {
+        return super.getSizeRatioWidth()/parentPane.getSizeRatioWidth(); //To change body of generated methods, choose Tools | Templates.
+    }
    
-    
     
     
 }

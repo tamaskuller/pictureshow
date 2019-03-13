@@ -81,7 +81,6 @@ public class PictureComponentTable implements Serializable {
     @Basic(optional = false)
     @Column(name = "curr_base_locationY")
     private double currbaselocationY;
-    @Basic(optional = false)
     @Column(name = "default_motion_type")
     private String defaultMotionType;
     @Basic(optional = false)
@@ -160,14 +159,13 @@ public class PictureComponentTable implements Serializable {
         this.componentID = componentID;
     }
 
-    public PictureComponentTable(Integer componentID, short adminEnabled, double currBaseSizeHeight, double currBaseSizeWidth, double currbaselocationX, double currbaselocationY, String defaultMotionType, String iconString, short isButtonComponent, short isPaneComponent, double minHeight, double minWidth, double motionRatio, double origSizeHeight, double origSizeWidth, double origlocationX, double origlocationY, short shown, double sizeParentRatioHeight, double sizeParentRatioWidth, double sizeRatioHeight, double sizeRatioWidth) {
+    public PictureComponentTable(Integer componentID, short adminEnabled, double currBaseSizeHeight, double currBaseSizeWidth, double currbaselocationX, double currbaselocationY, String iconString, short isButtonComponent, short isPaneComponent, double minHeight, double minWidth, double motionRatio, double origSizeHeight, double origSizeWidth, double origlocationX, double origlocationY, short shown, double sizeParentRatioHeight, double sizeParentRatioWidth, double sizeRatioHeight, double sizeRatioWidth) {
         this.componentID = componentID;
         this.adminEnabled = adminEnabled;
         this.currBaseSizeHeight = currBaseSizeHeight;
         this.currBaseSizeWidth = currBaseSizeWidth;
         this.currbaselocationX = currbaselocationX;
         this.currbaselocationY = currbaselocationY;
-        this.defaultMotionType = defaultMotionType;
         this.iconString = iconString;
         this.isButtonComponent = isButtonComponent;
         this.isPaneComponent = isPaneComponent;

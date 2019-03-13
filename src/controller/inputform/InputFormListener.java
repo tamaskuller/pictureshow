@@ -28,6 +28,7 @@ import view.enums.FormTypes;
 import view.inputForm.InputBox;
 import view.inputForm.InputFormInt;
 import view.interfaces.PictureComponentInterface;
+import view.interfaces.PictureFrameInterface;
 import view.recordtypeclasses.CompParams;
 import view.recordtypeclasses.JFrameBaseFormParams;
 import view.recordtypeclasses.PictCompParams;
@@ -88,7 +89,7 @@ public class InputFormListener implements ActionListener {
             switch (type) {
                 case SAVE_FRAME:
                 case INPUTFORM_FRAME:
-                    FormFactoryV1.createForm(FormTypes.PICTUREFRAME, null, null, getFrameParams());
+                    PictureFrameInterface pictureFrame=FormFactoryV1.createForm(FormTypes.PICTUREFRAME_EMPTY, null, null, getFrameParams());                    
                     break;
                 case INPUTFORM_PANE:
                     setPictCompParams();

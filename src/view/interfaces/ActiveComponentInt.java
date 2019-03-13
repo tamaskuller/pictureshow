@@ -13,6 +13,7 @@ public interface ActiveComponentInt {
     public void mouseEnterred();
     public void mouseExited();
     public void onClick();
+    public int  getActivateClickCount();
     public void activate();
     public void deActivate();
     public void minimize();    

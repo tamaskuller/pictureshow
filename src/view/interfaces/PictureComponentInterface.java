@@ -20,8 +20,7 @@ public interface PictureComponentInterface extends AutoShapeComponentInt, AutoSh
      public void Delete();
      public String getIconString();
      public void setVisible();
-     public void setInVisible();
-     
+     public void setInVisible();     
      public void setImagePath(String imagePath);
      public void removeImage();
      public boolean isUnderConst();

@@ -16,7 +16,7 @@ public class LoadFrameTableModel extends GenericTableModel {
     
     
     public LoadFrameTableModel(List<Object[]> data) {        
-        super(Arrays.asList("Frame name", "Frame Width","Frame Height", "Count of Panes"), data);        
+        super(Arrays.asList("Frame name", "Frame Width","Frame Height", "Count of Panes","Date of save"), data);                
     }    
 
     

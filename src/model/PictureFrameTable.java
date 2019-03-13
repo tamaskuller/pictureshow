@@ -7,6 +7,7 @@ package model;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +18,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -43,7 +46,8 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "PictureFrameTable.findBySizeRatioHeight", query = "SELECT p FROM PictureFrameTable p WHERE p.sizeRatioHeight = :sizeRatioHeight")
     , @NamedQuery(name = "PictureFrameTable.findBySizeRatioWidth", query = "SELECT p FROM PictureFrameTable p WHERE p.sizeRatioWidth = :sizeRatioWidth")
     , @NamedQuery(name = "PictureFrameTable.findByImageName", query = "SELECT p FROM PictureFrameTable p WHERE p.imageName = :imageName")
-    , @NamedQuery(name = "PictureFrameTable.findByImagePath", query = "SELECT p FROM PictureFrameTable p WHERE p.imagePath = :imagePath")})
+    , @NamedQuery(name = "PictureFrameTable.findByImagePath", query = "SELECT p FROM PictureFrameTable p WHERE p.imagePath = :imagePath")
+    , @NamedQuery(name = "PictureFrameTable.findBySaveDate", query = "SELECT p FROM PictureFrameTable p WHERE p.saveDate = :saveDate")})
 public class PictureFrameTable implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -90,6 +94,9 @@ public class PictureFrameTable implements Serializable {
     private String imageName;
     @Column(name = "image_path")
     private String imagePath;
+    @Column(name = "save_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date saveDate;
     @OneToMany(mappedBy = "parentframeID")
     private Collection<PicturePaneTable> picturePaneTableCollection;
 
@@ -231,6 +238,14 @@ public class PictureFrameTable implements Serializable {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public Date getSaveDate() {
+        return saveDate;
+    }
+
+    public void setSaveDate(Date saveDate) {
+        this.saveDate = saveDate;
     }
 
     @XmlTransient

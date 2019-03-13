@@ -5,6 +5,7 @@
  */
 package controller.DB;
 
+import com.mysql.cj.result.LocalDateTimeValueFactory;
 import controller.DB.exceptions.IllegalOrphanException;
 import controller.DB.exceptions.NonexistentEntityException;
 import view.enums.FormTypes;
@@ -35,7 +36,10 @@ import enums.MapFactoryTypes;
 import controller.maps.MapCreatorFactV1;
 import controller.maps.MapFactoryAbs;
 import enums.DataSourceTypes;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import model.ImageFactoryV1;
 import util.StaticEnvironmentParams;
@@ -143,6 +147,9 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
             pictureFrameTable.setFrameSizeWidth(pictureFrameGetters.getFrameSize().getWidth());
             pictureFrameTable.setFullState(booleanToShort (pictureFrameGetters.isFullState()));                
             pictureFrameTable.setName(pictureFrameGetters.getTitle());            
+            LocalDateTime ldt=LocalDateTime.now();
+            Date saveDate=Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());            
+            pictureFrameTable.setSaveDate(saveDate);
             if (pictureFrameGetters.getImage()!=null)
                {       
                 pictureFrameTable.setImageName(pictureFrameGetters.getImage().getImageName());
@@ -273,11 +280,12 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
     List<Object[]> resultList=new ArrayList<>();    
     
     for (PictureFrameTable pictureFrameTable : queryResult) {
-        Object[] frameTableLimited=new Object[4];            
+        Object[] frameTableLimited=new Object[5];            
         frameTableLimited[0]=pictureFrameTable.getName();
         frameTableLimited[1]=pictureFrameTable.getFrameSizeWidth();
         frameTableLimited[2]=pictureFrameTable.getFrameSizeHeight();
         frameTableLimited[3]=pictureFrameTable.getPicturePaneTableCollection().size();        
+        frameTableLimited[4]=pictureFrameTable.getSaveDate();        
         resultList.add(frameTableLimited);
     }
     return resultList;
@@ -304,8 +312,7 @@ public synchronized PictureFrameInterface loadFrame(String name) throws Nonexist
                             .adjMaxSize(true)
                             .toCenter(true)
                             .build();
-               PictureFrameInterface pictureFrame=FormFactoryV1.createForm(FormTypes.PICTUREFRAME,null,null, params);
-               pictureFrame.dbLoad();               
+               PictureFrameInterface pictureFrame=FormFactoryV1.createForm(FormTypes.PICTUREFRAME,null,null, params);               
                pictureFrame.setImage(ImageFactoryV1.getImage(DataSourceTypes.DISK, null, pictureFrameTable.getImageName()));               
                for (PicturePaneTable picturePaneTable : pictureFrameTable.getPicturePaneTableCollection()) {                        
                         loadPane(picturePaneTable, pictureFrame, true);                                                
@@ -403,20 +410,9 @@ private PictCompParams fillPictCompParams(PictCompTypes pictCompType,PictureComp
     @Override
     public synchronized boolean deleteFrame(String name) throws NonexistentEntityException{
             PictureFrameTable pictureFrameTable=(PictureFrameTable) getFramesByName(name).getResultList().get(0);
-            for (PicturePaneTable picturePaneTable : pictureFrameTable.getPicturePaneTableCollection()) {
-                try {                                    
-                for (PictureComponentTable pictureComponentTable : picturePaneTable.getPictureComponentTableCollection()) {
-                        pictureCompCont.destroy(pictureComponentTable.getComponentID());                
-                }
-                for (PictureButtonTable pictureButtonTable : picturePaneTable.getPictureButtonTableCollection()) {
-                        pictureButtonCont.destroy(pictureButtonTable.getButtonID());                    
-                }                               
-                    picturePaneCont.destroy(picturePaneTable.getPaneID());
-                } catch (IllegalOrphanException ex) {
-                        throw new NonexistentEntityException(name+" related record couldn'T be deleted");
-                }
-            
-        }
+            for (PicturePaneTable picturePaneTable : pictureFrameTable.getPicturePaneTableCollection()) {                
+                deletePane(name,picturePaneTable);
+            }
         try {
             pictureFrameCont.destroy(pictureFrameTable.getFrameID());                                    
         } catch (NonexistentEntityException ex) {
@@ -426,6 +422,25 @@ private PictCompParams fillPictCompParams(PictCompTypes pictCompType,PictureComp
         return true;
     }
 
+    private synchronized void deletePane(String name,PicturePaneTable picturePaneTable) throws NonexistentEntityException
+    {
+                try 
+                {                                    
+                    for (PicturePaneTable picturePaneTable1 : picturePaneTable.getPicturePaneTableCollection()) {
+                        deletePane(name,picturePaneTable1);
+                    }                
+                    for (PictureComponentTable pictureComponentTable : picturePaneTable.getPictureComponentTableCollection()) {
+                            pictureCompCont.destroy(pictureComponentTable.getComponentID());                
+                    }                
+                    for (PictureButtonTable pictureButtonTable : picturePaneTable.getPictureButtonTableCollection()) {
+                            pictureButtonCont.destroy(pictureButtonTable.getButtonID());                    
+                    }                               
+                    picturePaneCont.destroy(picturePaneTable.getPaneID());
+                } catch (IllegalOrphanException ex) {
+                        throw new NonexistentEntityException(name+" related record couldn'T be deleted");
+                }
+        
+    }
     
 }
 

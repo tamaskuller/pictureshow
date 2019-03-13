@@ -67,28 +67,12 @@ public class FramesTableFormSingV2 extends InputForm implements Observer {
     {
                     PictDBActionsV1.getInstance().addObserver(this);
                     loadFrameTable=new LoadFrameTableModel(PictDBActionsV1.getInstance().getFrameRecordsLimited());
-                    frameTable=new JTable(loadFrameTable);                                                        
-                    frameTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-                    JScrollTable scrollTable = new JScrollTable(frameTable);                    
-                    scrollTable.setPreferredSize(new Dimension(400,300));
+                    frameTable=new JTable(loadFrameTable);                                      
+                    frameTable.getColumnModel().getColumn(4).setPreferredWidth(150);
+                    JScrollTable scrollTable = new JScrollTable(frameTable);                                        
+                    scrollTable.setPreferredSize(new Dimension(600,300));                    
                     addScrollTable(scrollTable,true);
-                    addController(new JButton("Delete PictureFrame from DB"), true,new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {                           
-                            JTable jTable=scrollTable.getjTable();
-                            if (jTable.getSelectedRow()!=-1)
-                                {
-                                String name=(String) jTable.getValueAt(jTable.getSelectedRow(), 0);
-                                if (JOptionPane.showConfirmDialog(frameTable, "Are you sure you want to delete "+name+" Frame from DB?","Delete Frame?", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)                                
-                                    {                                                                        
-                                    toDeleteName=name;
-                                    deleteInit(toDeleteName);
-                                    //deleteFrame(name);
-                                    }
-                                //updateSizeLocation();
-                                }
-                        }
-                    });
+                    frameTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);                                        
                     addController(new JButton("Draw PictureFrame"), true, new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
@@ -128,6 +112,24 @@ public class FramesTableFormSingV2 extends InputForm implements Observer {
                                 }
                         }
                     });
+                    addController(new JButton("Delete PictureFrame from DB"), true,new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {                           
+                            JTable jTable=scrollTable.getjTable();
+                            if (jTable.getSelectedRow()!=-1)
+                                {
+                                String name=(String) jTable.getValueAt(jTable.getSelectedRow(), 0);
+                                if (JOptionPane.showConfirmDialog(frameTable, "Are you sure you want to delete "+name+" Frame from DB?","Delete Frame?", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)                                
+                                    {                                                                        
+                                    toDeleteName=name;
+                                    deleteInit(toDeleteName);
+                                    //deleteFrame(name);
+                                    }
+                                //updateSizeLocation();
+                                }
+                        }
+                    });
+                    
                     setSaveFocusListener();                    
                     nameInputBox.getText().addFocusListener(saveFocusListener);
                     saveButton.addFocusListener(saveFocusListener);
