@@ -5,6 +5,7 @@
  */
 package controller.DB;
 
+import controller.DB.exceptions.SystemRecordCannotBeDeleted;
 import com.mysql.cj.result.LocalDateTimeValueFactory;
 import controller.DB.exceptions.IllegalOrphanException;
 import controller.DB.exceptions.NonexistentEntityException;
@@ -36,12 +37,15 @@ import enums.MapFactoryTypes;
 import controller.maps.MapCreatorFactV1;
 import controller.maps.MapFactoryAbs;
 import enums.DataSourceTypes;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import model.ImageFactoryV1;
+import model.Logins;
 import util.StaticEnvironmentParams;
 import util.FileOperations;
 import view.interfaces.AttachedGettersInt;
@@ -59,6 +63,7 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
     static PicturePaneTableJpaController picturePaneCont;
     static PictureComponentTableJpaController pictureCompCont;
     static PictureButtonTableJpaController pictureButtonCont;
+    static LoginsJpaController loginsCont;
     static PictDBActionsV1 instance;
     static List<Observer> observers;
             
@@ -72,6 +77,7 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
     picturePaneCont=new PicturePaneTableJpaController(factory);        
     pictureCompCont=new PictureComponentTableJpaController(factory);        
     pictureButtonCont=new PictureButtonTableJpaController(factory);
+    loginsCont=new LoginsJpaController(factory);
     observers=new ArrayList<>();
     }        
           
@@ -147,9 +153,7 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
             pictureFrameTable.setFrameSizeWidth(pictureFrameGetters.getFrameSize().getWidth());
             pictureFrameTable.setFullState(booleanToShort (pictureFrameGetters.isFullState()));                
             pictureFrameTable.setName(pictureFrameGetters.getTitle());            
-            LocalDateTime ldt=LocalDateTime.now();
-            Date saveDate=Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());            
-            pictureFrameTable.setSaveDate(saveDate);
+            pictureFrameTable.setSaveDate(getDateNow());
             if (pictureFrameGetters.getImage()!=null)
                {       
                 pictureFrameTable.setImageName(pictureFrameGetters.getImage().getImageName());
@@ -267,9 +271,9 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
         return (short) (bln?1:0);
     }
     
-    private boolean ShortToBoolean(short shrt)
-    {
-        return (shrt==1?true:false);
+    private Boolean ShortToBoolean(Short shrt)
+    {            
+        return (shrt==null?false:(shrt==1?true:false));
     }
 
     @Override
@@ -280,12 +284,13 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
     List<Object[]> resultList=new ArrayList<>();    
     
     for (PictureFrameTable pictureFrameTable : queryResult) {
-        Object[] frameTableLimited=new Object[5];            
+        Object[] frameTableLimited=new Object[6];            
         frameTableLimited[0]=pictureFrameTable.getName();
         frameTableLimited[1]=pictureFrameTable.getFrameSizeWidth();
         frameTableLimited[2]=pictureFrameTable.getFrameSizeHeight();
         frameTableLimited[3]=pictureFrameTable.getPicturePaneTableCollection().size();        
         frameTableLimited[4]=pictureFrameTable.getSaveDate();        
+        frameTableLimited[5]=ShortToBoolean(pictureFrameTable.getSystemRecord());
         resultList.add(frameTableLimited);
     }
     return resultList;
@@ -408,12 +413,14 @@ private PictCompParams fillPictCompParams(PictCompTypes pictCompType,PictureComp
     }
     
     @Override
-    public synchronized boolean deleteFrame(String name) throws NonexistentEntityException{
-            PictureFrameTable pictureFrameTable=(PictureFrameTable) getFramesByName(name).getResultList().get(0);
-            for (PicturePaneTable picturePaneTable : pictureFrameTable.getPicturePaneTableCollection()) {                
+    public synchronized boolean deleteFrame(String name) throws NonexistentEntityException, SystemRecordCannotBeDeleted{
+        PictureFrameTable pictureFrameTable=(PictureFrameTable) getFramesByName(name).getResultList().get(0);
+        if (ShortToBoolean(pictureFrameTable.getSystemRecord())==true)
+                throw new SystemRecordCannotBeDeleted(name+" is a system record. Cannot be deleted!!");        
+        for (PicturePaneTable picturePaneTable : pictureFrameTable.getPicturePaneTableCollection()) {                
                 deletePane(name,picturePaneTable);
             }
-        try {
+        try {            
             pictureFrameCont.destroy(pictureFrameTable.getFrameID());                                    
         } catch (NonexistentEntityException ex) {
              throw new NonexistentEntityException(name+" wasn'T found in DB");            
@@ -441,7 +448,30 @@ private PictCompParams fillPictCompParams(PictCompTypes pictCompType,PictureComp
                 }
         
     }
-    
+
+    @Override
+    public void saveLogin() {
+        Logins logins=new Logins();
+        logins.setLoginDate(getDateNow());        
+        try {
+            logins.setIPaddress(InetAddress.getLocalHost().getHostAddress());
+            logins.setHostName(InetAddress.getLocalHost().getCanonicalHostName());
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(PictDBActionsV1.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            loginsCont.create(logins);
+        } catch (Exception ex) {
+            Logger.getLogger(PictDBActionsV1.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private Date getDateNow() {
+            LocalDateTime ldt=LocalDateTime.now();
+            return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());            
+            }
+
+   
 }
 
 

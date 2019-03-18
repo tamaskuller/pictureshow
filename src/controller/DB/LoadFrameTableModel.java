@@ -16,9 +16,23 @@ public class LoadFrameTableModel extends GenericTableModel {
     
     
     public LoadFrameTableModel(List<Object[]> data) {        
-        super(Arrays.asList("Frame name", "Frame Width","Frame Height", "Count of Panes","Date of save"), data);                
+        super(Arrays.asList("Frame name", "Frame Width","Frame Height", "Count of Panes","Date of save","System Record"), data);                
     }    
 
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        return getBoolean(super.getValueAt(rowIndex, columnIndex));        
+    }
+
+    private Object getBoolean(Object input)
+    {
+        Boolean inputBoolean=(input instanceof Boolean)? (Boolean) input: null;        
+        return (inputBoolean==null)?input:(inputBoolean)?inputBoolean:null;
+    }
+            
+            
+    
+    
     
     
 }

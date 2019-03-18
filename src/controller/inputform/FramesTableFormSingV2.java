@@ -8,6 +8,7 @@ package controller.inputform;
 import controller.DB.LoadFrameTableModel;
 import controller.DB.PictDBActionsV1;
 import controller.DB.exceptions.NonexistentEntityException;
+import controller.DB.exceptions.SystemRecordCannotBeDeleted;
 import controller.adapter.AdaptInputFormIntSubject;
 import enums.InputTypes;
 import java.awt.Dimension;
@@ -15,6 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -41,6 +44,7 @@ public class FramesTableFormSingV2 extends InputForm implements Observer {
     private PictureFrameInterface parent;
     private FocusListener saveFocusListener;
     private String toDeleteName;
+    private String toDrawName;    
     private String toSaveName;
     private AdaptInputFormIntSubject messageForm;
    
@@ -68,21 +72,19 @@ public class FramesTableFormSingV2 extends InputForm implements Observer {
                     PictDBActionsV1.getInstance().addObserver(this);
                     loadFrameTable=new LoadFrameTableModel(PictDBActionsV1.getInstance().getFrameRecordsLimited());
                     frameTable=new JTable(loadFrameTable);                                      
-                    frameTable.getColumnModel().getColumn(4).setPreferredWidth(150);
+                    frameTable.getColumnModel().getColumn(4).setPreferredWidth(200);
                     JScrollTable scrollTable = new JScrollTable(frameTable);                                        
-                    scrollTable.setPreferredSize(new Dimension(600,300));                    
+                    scrollTable.setPreferredSize(new Dimension(700,300));                    
                     addScrollTable(scrollTable,true);
                     frameTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);                                        
                     addController(new JButton("Draw PictureFrame"), true, new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            JTable jTable=scrollTable.getjTable();
-                            if (jTable.getSelectedRow()!=-1)
-                                try {
-                                    PictDBActionsV1.getInstance().loadFrame((String) jTable.getValueAt(jTable.getSelectedRow(), 0));
-                                    } catch (NonexistentEntityException ex) {
-                                        JOptionPane.showMessageDialog(jTable, ex.getMessage());
-                                    }
+                            if (frameTable.getSelectedRow()!=-1)
+                                {
+                                toDrawName=(String) frameTable.getValueAt(frameTable.getSelectedRow(), 0);
+                                drawInit(toDrawName);                                
+                                }
                         }
                     });                
                     addController(new JButton("Refresh Frames list"), false,  new ActionListener() {
@@ -163,13 +165,15 @@ public class FramesTableFormSingV2 extends InputForm implements Observer {
             case DB_DELETE_FRAME:
                 toDeleteName=null;                
                 updateSizeLocation();                
-             break;
+             break;            
             case READY_FOR_DELETE:                 
                 deleteFrame(toDeleteName);                                        
             break;
             case READY_FOR_SAVE:                 
                 saveFrame(toSaveName, parent);
             break;
+            case READY_DRAW:
+                drawFrame(toDrawName);
         }
         
             
@@ -201,18 +205,34 @@ public class FramesTableFormSingV2 extends InputForm implements Observer {
     private synchronized void deleteFrame(String name)
     {
         try {               
-                                
-            
             PictDBActionsV1.getInstance().deleteFrame(name);          
             messageForm.close();                                                                   
-            JOptionPane.showMessageDialog(frameTable, name+" was deleted successfully!");                         
+            JOptionPane.showMessageDialog(frameTable, name+" was deleted successfully!");                                     
+            } catch (NonexistentEntityException|SystemRecordCannotBeDeleted ex) {              
+                JOptionPane.showMessageDialog(frameTable, ex.getMessage());                 
+            } finally {
             messageForm.close();             
-            } catch (NonexistentEntityException ex) {
-              JOptionPane.showMessageDialog(frameTable, ex.getMessage());     
-            }
-       
+        }
+            
     }
 
+    private void drawInit(String name)
+    {
+       createMessageForm(FormTypes.MESSAGE_FORM_DRAW, "Please wait while loading of "+name+" is in progress...");
+    }
+    
+    private synchronized void drawFrame(String name)
+    {
+        try {
+            PictDBActionsV1.getInstance().loadFrame(name);
+        } catch (NonexistentEntityException ex) {
+            JOptionPane.showMessageDialog(frameTable, ex.getMessage());
+        } finally{
+            messageForm.close();                                                                   
+        }            
+        
+    }
+    
     private synchronized void saveInit(String name)
     {
             createMessageForm(FormTypes.MESSAGE_FORM_SAVE, "Please wait while saving of "+name+" is in progress...");

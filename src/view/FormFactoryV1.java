@@ -51,12 +51,12 @@ static int onClose;
                 //form=inputForm;                                                
                 formObject=form;                                       
                 break;        
+            case MESSAGE_FORM_DRAW:
             case MESSAGE_FORM_DELETE:            
             case MESSAGE_FORM_SAVE:                       
                 String message=baseFormParams.title;
                 baseFormParams.title=null;    
-                Action action=(formType==FormTypes.MESSAGE_FORM_DELETE)?Observer.Action.READY_FOR_DELETE:Observer.Action.READY_FOR_SAVE;                
-                form=new MessageFormV1(baseFormParams,message,action);
+                form=new MessageFormV1(baseFormParams,message,formType, (formType==FormTypes.MESSAGE_FORM_DRAW)?true:false);
                 break;            
                 
             case INSTRUCTION_FORM:                               
@@ -104,7 +104,7 @@ static int onClose;
         {
         if (form!=mainForm)            
             form.setDefaultCloseOperation(onClose);                         
-        SwingUtilities.invokeLater(new Runnable (){                    
+            SwingUtilities.invokeLater(new Runnable (){                    
                     public void run() {
                         form.setVisible(true);                        
                         observerForm.update(Action.FRAME_READY, null);

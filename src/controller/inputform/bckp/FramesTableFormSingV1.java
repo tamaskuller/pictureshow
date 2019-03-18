@@ -8,6 +8,7 @@ package controller.inputform.bckp;
 import controller.DB.LoadFrameTableModel;
 import controller.DB.PictDBActionsV1;
 import controller.DB.exceptions.NonexistentEntityException;
+import controller.DB.exceptions.SystemRecordCannotBeDeleted;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -67,7 +68,7 @@ public class FramesTableFormSingV1 extends InputForm implements Observer {
                                     try {
                                         PictDBActionsV1.getInstance().deleteFrame(name);
                                         JOptionPane.showMessageDialog(frameTable, name+" was deleted successfully!");     
-                                    } catch (NonexistentEntityException ex) {
+                                    } catch (SystemRecordCannotBeDeleted|NonexistentEntityException ex) {
                                         JOptionPane.showMessageDialog(frameTable, ex.getMessage());     
                                     }
                                     updateSizeLocation();

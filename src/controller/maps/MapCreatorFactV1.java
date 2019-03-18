@@ -16,7 +16,8 @@ public class MapCreatorFactV1 {
         switch (mapFactoryType)
         {case ANIMTYPE_ANIMPARAMS: return AnimTypeMapBuildVer1.getInstance();
         case PARAMFIELD_INPUTBOX: return new InputFormMappingBuildVer1();        
-        case MENU_FORMTYPE: return new MenuItemFormTypeMapBuildV1();
+        case MENU_FORMTYPE: return new MenuItemFormTypeMapBuildV1();        
+        
         }
         return null;
     }

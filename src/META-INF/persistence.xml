@@ -14,6 +14,7 @@
     <class>model.PictureFrameTable</class>
     <class>model.PictureButtonTable</class>
     <class>model.PicturePaneTable</class>
+    <class>model.Logins</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://remotemysql.com:3306/qvUHvrwf8A?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.user" value="qvUHvrwf8A"/>

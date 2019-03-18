@@ -66,6 +66,7 @@ public class PictureShow {
                         System.out.println("Not supported AppHostType - "+StaticEnvironmentParams.appHostType.name());
                     }                                
         System.out.println(StaticEnvironmentParams.appHostType.name()+" host type defaulted!");
+        PictDBActionsV1.getInstance().saveLogin();
         boolean frameLoaded=false;        
         if (args.length>0)
             try {

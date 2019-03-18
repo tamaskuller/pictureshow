@@ -7,6 +7,7 @@ package controller.DB;
 
 
 import controller.DB.exceptions.NonexistentEntityException;
+import controller.DB.exceptions.SystemRecordCannotBeDeleted;
 import java.util.List;
 import model.exceptions.PreexistingEntityException;
 import view.interfaces.PictureFrameInterface;
@@ -18,6 +19,7 @@ import view.interfaces.PictureFrameInterface;
 public interface PictDBActionsInt {
     public void saveFrame(PictureFrameInterface pictureFrameInterface, String name) throws PreexistingEntityException;    
     public PictureFrameInterface loadFrame(String name) throws NonexistentEntityException;    
-    public boolean deleteFrame(String name) throws NonexistentEntityException;    
+    public boolean deleteFrame(String name) throws NonexistentEntityException, SystemRecordCannotBeDeleted;    
     public List<Object[]> getFrameRecordsLimited();    
+    public void saveLogin();
 }

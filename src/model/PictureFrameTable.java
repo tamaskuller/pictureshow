@@ -47,7 +47,8 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "PictureFrameTable.findBySizeRatioWidth", query = "SELECT p FROM PictureFrameTable p WHERE p.sizeRatioWidth = :sizeRatioWidth")
     , @NamedQuery(name = "PictureFrameTable.findByImageName", query = "SELECT p FROM PictureFrameTable p WHERE p.imageName = :imageName")
     , @NamedQuery(name = "PictureFrameTable.findByImagePath", query = "SELECT p FROM PictureFrameTable p WHERE p.imagePath = :imagePath")
-    , @NamedQuery(name = "PictureFrameTable.findBySaveDate", query = "SELECT p FROM PictureFrameTable p WHERE p.saveDate = :saveDate")})
+    , @NamedQuery(name = "PictureFrameTable.findBySaveDate", query = "SELECT p FROM PictureFrameTable p WHERE p.saveDate = :saveDate")
+    , @NamedQuery(name = "PictureFrameTable.findBySystemRecord", query = "SELECT p FROM PictureFrameTable p WHERE p.systemRecord = :systemRecord")})
 public class PictureFrameTable implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -97,6 +98,8 @@ public class PictureFrameTable implements Serializable {
     @Column(name = "save_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date saveDate;
+    @Column(name = "system_record")
+    private Short systemRecord;
     @OneToMany(mappedBy = "parentframeID")
     private Collection<PicturePaneTable> picturePaneTableCollection;
 
@@ -246,6 +249,14 @@ public class PictureFrameTable implements Serializable {
 
     public void setSaveDate(Date saveDate) {
         this.saveDate = saveDate;
+    }
+
+    public Short getSystemRecord() {
+        return systemRecord;
+    }
+
+    public void setSystemRecord(Short systemRecord) {
+        this.systemRecord = systemRecord;
     }
 
     @XmlTransient
