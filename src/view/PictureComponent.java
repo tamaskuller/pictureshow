@@ -144,7 +144,6 @@ public class PictureComponent extends AdaptPictJComponent{
         double actualHeight=(minHeight>currBaseSize.getHeight()?minHeight:currBaseSize.getHeight());        
         currBaseSize.setSize(actualWidth,actualHeight);        
     }    
-    
    
     @Override
     public void paintPict(PaintRequestParams paintRequest)             
@@ -178,7 +177,6 @@ public class PictureComponent extends AdaptPictJComponent{
                         timerPending.start();                        
                         }                                                     
         }
-
     
    protected void animator(PaintRequestParams paintRequest) {
                     underConst=true;
@@ -216,9 +214,6 @@ public class PictureComponent extends AdaptPictJComponent{
                             timer.start();                                    
                             System.out.println("PICT:"+this.toString());                                                        
         }
-   
-    
-    
     
     @Override    
     public void paintComponent(Graphics grphcs) {                
@@ -244,8 +239,6 @@ public class PictureComponent extends AdaptPictJComponent{
         super.setLocation(adjLocation); //To change body of generated methods, choose Tools | Templates.                
     }                
    
-    
-    
     protected Point getAdjCurrLocation(Point location)
     {            
             //updateParentSizeRatios();
@@ -277,7 +270,6 @@ public class PictureComponent extends AdaptPictJComponent{
                 //this.iconStringPos=new Point((int)minWidth/5,(int)minHeight/2);        
     }   
        
-    
     @Override
     public Dimension getAdjCurrSize(boolean checkMin, boolean adjLocation, boolean calcWithMotion)
     {                 
@@ -302,7 +294,6 @@ public class PictureComponent extends AdaptPictJComponent{
             minHeight=parentPane.getAdjCurrSize(checkMin, adjLocation, false).getHeight()*minHeightMultiplier;
             }
    }
-
     
     protected Dimension getMaxSize(Dimension s,  boolean calcWithMotion)
     {
@@ -360,7 +351,6 @@ public class PictureComponent extends AdaptPictJComponent{
     public void setVisible(boolean aFlag) {
                 super.setVisible(aFlag); //To change body of generated methods, choose Tools | Templates.
                 setToolTipText(toolTipText); 
-                
 //                double currentWidth=minWidth>currBaseSize.getWidth()?minWidth:currBaseSize.getWidth();
 //                double currentHeight=minHeight>currBaseSize.getHeight()?minHeight:currBaseSize.getHeight();
 //                sizeRatioWidth=currBaseSize.getWidth()/currentWidth;
@@ -384,11 +374,7 @@ public class PictureComponent extends AdaptPictJComponent{
         currBaseLocation=adjLocation;
         currBaseSize=adjSize;                
         System.out.println("currbaseSize:"+currBaseSize);
-     
     }
-    
-    
-    
     
     @Override
     public synchronized void adjCurrBaseSize(double addWidth, double addHeight, boolean adjustLoc) {                
@@ -413,10 +399,8 @@ public class PictureComponent extends AdaptPictJComponent{
             System.out.println("NewRatioWidth:"+sizeRatioWidth+" origwidth:"+origDim.getWidth()+" newWidth:"+adjDim.getWidth());            
             updateSizeLocation();
             constructed();
-
             }
     }
-
     
     @Override
     public synchronized void adjCurrBaseLocation(double addX, double addY) {
@@ -433,7 +417,6 @@ public class PictureComponent extends AdaptPictJComponent{
         locRatioWidth=(adjLocation.getX()/origLocation.getX())*locRatioWidth;
         locRatioHeight=(adjLocation.getY()/origLocation.getY())*locRatioHeight;            
         updateSizeLocation();
-        
     }
        
     
@@ -447,14 +430,12 @@ public class PictureComponent extends AdaptPictJComponent{
         this.adminEnabled = adminEnabled;             
         currentBorder();        
     }
-    
    
     @Override
     public boolean adminSwitched() {
         setAdminEnabled(!adminEnabled);        
         return adminEnabled;        
     }
-   
 
     @Override
     public void onClick() {        
@@ -509,7 +490,6 @@ public class PictureComponent extends AdaptPictJComponent{
     public void maximize() {
         paintPict(new PaintRequestParams(true, true, minMaxMotionType, parentPane.getComponentOrder(this), false));
     }
-                        
 
     @Override
     public void mouseEnterred() {
@@ -527,7 +507,6 @@ public class PictureComponent extends AdaptPictJComponent{
                     parentPane.deActivate();        
                     deActivate();
                 }
-        
     }
 
     @Override
@@ -623,8 +602,5 @@ public class PictureComponent extends AdaptPictJComponent{
     public Point getCurrBaseLocation() {
         return currBaseLocation;
     }
-    
-    
-    
 }
                    
