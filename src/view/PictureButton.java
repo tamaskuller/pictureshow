@@ -17,9 +17,12 @@ import view.recordtypeclasses.PictCompParams;
  * @author Kuller Tamas
  */
 public class PictureButton extends PictureComponent {    
+    private final static Color BUTTON_BORDER_COLOR=Color.WHITE;    
     private final static Color BUTTON_COLOR=Color.RED;
     private final static Color BUTTON_COLOR_ACTIVE=Color.MAGENTA;
+    private final static int BUTTON_BORDER_WIDTH=2;
     private Color currentButtonColor=BUTTON_COLOR;    
+    
     
     public PictureButton(PicturePaneInterface parentPane,PictCompParams params ) {        
         super(parentPane,params);        
@@ -34,9 +37,10 @@ public class PictureButton extends PictureComponent {
     @Override
     public void paint(Graphics grphcs) {
         super.paint(grphcs); //To change body of generated methods, choose Tools | Templates.                                
-        //currentButtonColor=(grphcs.getColor()==BUTTON_COLOR)?BUTTON_COLOR2:BUTTON_COLOR;
+        grphcs.setColor(BUTTON_BORDER_COLOR);
+        grphcs.fillOval(0, 0, getWidth()-1, getHeight()-1);                                    
         grphcs.setColor(currentButtonColor);
-        grphcs.fillOval(0, 0, getWidth()-1, getHeight()-1);                
+        grphcs.fillOval(BUTTON_BORDER_WIDTH, BUTTON_BORDER_WIDTH, getWidth()-(BUTTON_BORDER_WIDTH*2)-1, getHeight()-(BUTTON_BORDER_WIDTH*2)-1);                
     }
 
     
