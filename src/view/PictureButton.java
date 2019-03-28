@@ -6,11 +6,14 @@
 package view;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
 import javax.swing.BorderFactory;
 import view.enums.MotionTypes;
 import view.interfaces.PicturePaneInterface;
 import view.recordtypeclasses.PictCompParams;
+import view.interfaces.AutoShape.AutoShapeCompResInt;
 
 /**
  *
@@ -21,16 +24,24 @@ public class PictureButton extends PictureComponent {
     private final static Color BUTTON_COLOR=Color.RED;
     private final static Color BUTTON_COLOR_ACTIVE=Color.MAGENTA;
     private final static int BUTTON_BORDER_WIDTH=2;
-    private Color currentButtonColor=BUTTON_COLOR;    
-    
+    private Color currentButtonColor=BUTTON_COLOR;        
     
     public PictureButton(PicturePaneInterface parentPane,PictCompParams params ) {        
-        super(parentPane,params);        
-        minWidthMultiplier=0.05;
-        minHeightMultiplier=0.05;  
+        super(parentPane,params);
+        autoShapeComponentRes=new AutoShapeCompRes(parentPane, this, BORDER_SECURE_DIST, currBaseSize, currBaseLocation, 0.05, 0.05)
+        {
+            @Override
+            public void setMinDimensions() {
+                super.setMinDimensions(); //To change body of generated methods, choose Tools | Templates.
+                 double min=(minHeight>minWidth)?minWidth:minHeight;
+                 minWidth=min;
+                 minHeight=min;                
+            }            
+        };
         normalBorder=BorderFactory.createEmptyBorder();
         currentBorder=normalBorder;
         bckColor=null;
+        autoShapeComponentRes.setMinDimensions();
         
     }
        
@@ -61,41 +72,14 @@ public class PictureButton extends PictureComponent {
         repaint();
     }
     
-    @Override
-    protected void setMinDimensions(boolean checkMin, boolean adjLocation) {
-        super.setMinDimensions(checkMin, adjLocation);
-        double min=(minHeight>minWidth)?minWidth:minHeight;
-        minWidth=min;
-        minHeight=min;
-    }
-
+    
 //    @Override
 //    public synchronized void adjCurrBaseSize(double addWidth, double addHeight, boolean adjustLoc) {
 //        double addSize=(addWidth!=0)?addWidth:addHeight;
 //        super.adjCurrBaseSize(addSize, addSize, adjustLoc); //To change body of generated methods, choose Tools | Templates.
 //    }
 
-    @Override
-    public double getLocRatioHeight() {
-        return super.getLocRatioHeight(); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public double getLocRatioWidth() {   
-        return getMoveFactor()*super.getLocRatioWidth(); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public synchronized void setCurrBaseSizeLocToCurrSizeLoc(boolean adminEnabled) {                
-        locRatioWidth=locRatioWidth/getMoveFactor();
-        super.setCurrBaseSizeLocToCurrSizeLoc(adminEnabled); //To change body of generated methods, choose Tools | Templates.                
-    }
-
-    private double getMoveFactor()
-    {
-        return 1;
-       //return parentPane.getAdjCurrSize(true, true, true).getWidth()/parentPane.getAdjCurrSize(true, true, false).getWidth();
-    }
 
     @Override
     public double getSizeRatioHeight() {

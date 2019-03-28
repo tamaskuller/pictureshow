@@ -18,5 +18,5 @@ public interface ActiveComponentInt {
     public void deActivate();
     public void minimize();    
     public void maximize();          
-    
+   
 }

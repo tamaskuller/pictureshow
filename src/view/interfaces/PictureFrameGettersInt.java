@@ -12,7 +12,7 @@ import java.awt.Dimension;
  *
  * @author Tamas Kuller
  */
-public interface PictureFrameGettersInt extends AutoShapeCompGettersInt, MultiComponentGetterInt, AdministratableGetterInt{
+public interface PictureFrameGettersInt extends MultiComponentGetterInt, AdministratableGetterInt{
     public String getTitle();    
     public Color getOldBackGroundColor();
     public double getSizeRatioContPaneWidth();    

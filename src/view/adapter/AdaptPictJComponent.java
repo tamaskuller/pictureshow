@@ -7,6 +7,8 @@ package view.adapter;
 
 import javax.swing.JComponent;
 import view.interfaces.PictureComponentInterface;
+import view.interfaces.AutoShape.AutoShapeCompInt;
+import view.interfaces.AutoShape.AutoShapeCompResInt;
 
 /**
  *

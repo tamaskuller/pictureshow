@@ -56,17 +56,7 @@ public class InputForm extends JFrameBaseFormAbs implements InputFormInt{
     public void open() {
         setVisible(true);
     }
-
-    @Override
-    public double getSizeRatioWidth() {
-        return 1;
-    }
-
-    @Override
-    public double getSizeRatioHeight() {
-        return 1;
-    }
-
+   
     
     
     public static class InputFormBuild {
@@ -107,10 +97,6 @@ public class InputForm extends JFrameBaseFormAbs implements InputFormInt{
         
     }    
 
-    @Override
-    public Dimension getAdjCurrSize(boolean checkMin, boolean adjLocation, boolean calcWithMotion) {
-        return getSize();
-    }
     
     
 
@@ -224,14 +210,13 @@ public class InputForm extends JFrameBaseFormAbs implements InputFormInt{
         return resultDimension;
     }
     
-    
     private JButton createButton(String text)
     {        
         JButton button=new JButton(text);        
         return button;
     }
+
     
-        
     
     
 }

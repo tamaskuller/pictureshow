@@ -19,7 +19,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
-import javax.swing.JPopupMenu;
 import javax.swing.Timer;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
@@ -33,6 +32,7 @@ import view.Menu.JPopupMenuAdj;
 import view.interfaces.NamedImageInt;
 import view.recordtypeclasses.AnimParams;
 import view.util.Observer;
+import view.interfaces.AutoShape.AutoShapeCompResInt;
 
 /**
  *
@@ -40,23 +40,21 @@ import view.util.Observer;
  */
 public class PictureComponent extends AdaptPictJComponent{               
    
-    protected PicturePaneInterface parentPane;
+    protected PicturePaneInterface parentPane;    
     protected PictureComponentGettersInt pictureComponentGetters;
+    protected AutoShapeCompResInt autoShapeComponentRes;    
+    //protected AutoShapeCompGettersInt autoShapeCompGet;    
+    
     protected final static int MAX_PENDING_PAINT=6;     
     protected final static int DEFAULT_FONT_STLYE=Font.BOLD;
-    protected final static int BORDER_SECURE_DIST=1;
+    protected final static int BORDER_SECURE_DIST=1;    
+    
     protected Border activeBorder=BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.RED, Color.PINK);    
     protected Border normalBorder=BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.LIGHT_GRAY, Color.GRAY);
     protected Border currentBorder=normalBorder;
     protected Color bckColor=Color.WHITE;
-    protected Color fontColor=Color.BLACK;
-    
-    protected double minWidth;     
-    protected double minHeight;                             
-    protected double minWidthMultiplier=0.2;     
-    protected double minHeightMultiplier=0.1;                             
-    
-    
+    protected Color fontColor=Color.BLACK;    
+   
     protected NamedImageInt image=null;    
     protected String imagePath=null;    
     
@@ -65,30 +63,19 @@ public class PictureComponent extends AdaptPictJComponent{
     protected MotionTypes defaultMotionType;    
     protected MapInterface<MotionTypes,AnimParams> motionTypeMaps;    
     
-    protected Dimension origSize;    
-    protected Dimension currBaseSize;    
-    protected Dimension lastSize;    
+    protected Dimension origSize;        
     protected Dimension fontRectSize;
+    protected Dimension currBaseSize;    
     
-    protected Point currBaseLocation;
-    protected Point origLocation;
-    protected Point lastLoc;        
-    
-    protected double sizeParentRatioWidth=1;
-    protected double sizeParentRatioHeight=1;   
-    protected double sizeRatioWidth=1;
-    protected double sizeRatioHeight=1;   
-    protected double locRatioWidth=1;
-    protected double locRatioHeight=1;   
-
-    protected double motionRatio=0;    
-    
+    protected Point currBaseLocation;    
+    protected Point origLocation;                                        
+        
     protected String iconString;  
     protected String toolTipText;      
     protected Point iconStringPos;
     protected double icon_x_indent_ratio=0.1;
     protected double icon_y_indent_ratio=0.1;
-        
+            
     private Timer timer;    
     private Timer timerPending;   
     protected boolean underConst=false;
@@ -102,13 +89,11 @@ public class PictureComponent extends AdaptPictJComponent{
     private List<PaintRequestParams> paintRequests;    
     protected JPopupMenuAdj popupMenu;
 
-
-    
     public PictureComponent(PictCompParams params) {
         //this.parentComponent=parentComponent;    
         //this.imagePath=params.imagePath;        
         this.currBaseLocation=new Point();        
-        this.currBaseLocation.setLocation(params.getX(),params.getY());
+        currBaseLocation.setLocation(params.getX(),params.getY());
         this.origLocation=currBaseLocation;
         //this.image=params.image;      
         this.fontRectSize=new Dimension();
@@ -119,37 +104,32 @@ public class PictureComponent extends AdaptPictJComponent{
         this.iconString=params.iconString;
         this.toolTipText=params.toolTipText;
         this.currBaseSize=new Dimension();
-        this.currBaseSize.setSize((params.getWidth()),params.getHeight());        
+        currBaseSize.setSize((params.getWidth()),params.getHeight());        
         System.out.println("size-width:"+params.getWidth());
         this.adminEnabled=params.adminEnabled;
-        this.origSize=currBaseSize;                
+        this.origSize=currBaseSize;                        
         //this.setVisible(true);             
         this.paintRequests=new ArrayList<>();                       
         System.out.println("OrigWidth:"+currBaseSize.getWidth());          
-
     }
 
     public PictureComponent(PicturePaneInterface parent, PictCompParams params) {
         this(params);
         this.parentPane=parent;             
+        this.autoShapeComponentRes=new AutoShapeCompRes(parentPane, this,BORDER_SECURE_DIST, currBaseSize, currBaseLocation, 0.2, 0.1);
     }            
-
     
-    private void FirstShowActions()
-    {
-        setMinDimensions(true, true);                 
-        sizeRatioWidth=1/parentPane.getSizeRatioWidth();
-        sizeRatioHeight=1/parentPane.getSizeRatioHeight();
-        double actualWidth=(minWidth>currBaseSize.getWidth()?minWidth:currBaseSize.getWidth());
-        double actualHeight=(minHeight>currBaseSize.getHeight()?minHeight:currBaseSize.getHeight());        
-        currBaseSize.setSize(actualWidth,actualHeight);        
-    }    
-   
+    @Override
+    public void setVisible(boolean aFlag) {
+                super.setVisible(aFlag); //To change body of generated methods, choose Tools | Templates.
+                setToolTipText(toolTipText); 
+    }
+        
     @Override
     public void paintPict(PaintRequestParams paintRequest)             
             {                       
                 if (firstShow)
-                    FirstShowActions();
+                    autoShapeComponentRes.firstShowActions();
                 firstShow=false;                    
                 if ((paintRequests.isEmpty()&&!shown==paintRequest.show)||paintRequest.forced)
                     paintRequests.add(paintRequest);
@@ -199,7 +179,7 @@ public class PictureComponent extends AdaptPictJComponent{
                                 public void actionPerformed(ActionEvent ae) {
                             //    System.out.println("Timer"+waitTime+"EDT?:"+SwingUtilities.isEventDispatchThread()+"step:"+stepTimer);                                                           
                                 stepTimer=stepTimer+((showTimer)?1:-1);                                                                    
-                                motionRatio=stepTimer/stepsTimer;                                
+                                setMotionRatio(stepTimer/stepsTimer);                                
                                 updateSizeLocation();                                                               
                                 if (showTimer?stepsTimer==stepTimer:0==stepTimer)
                                     {
@@ -214,7 +194,11 @@ public class PictureComponent extends AdaptPictJComponent{
                             timer.start();                                    
                             System.out.println("PICT:"+this.toString());                                                        
         }
-    
+
+    public void setMotionRatio(double motionRatio) {        
+        autoShapeComponentRes.setMotionRatio(motionRatio);
+    }    
+   
     @Override    
     public void paintComponent(Graphics grphcs) {                
         super.paintComponent(grphcs); //To change body of generated methods, choose Tools | Templates.             
@@ -226,199 +210,79 @@ public class PictureComponent extends AdaptPictJComponent{
                 {g.setColor(bckColor);
                 g.fillRect(1, 1, getWidth()-2, getHeight()-2);
                 }
-        Dimension coverBox=new Dimension((int) ((getWidth()<minWidth)?getWidth():minWidth),(int)minHeight);
+        Dimension coverBox=new Dimension((int) ((getWidth()<autoShapeComponentRes.getMinWidth())?getWidth():autoShapeComponentRes.getMinWidth()),(int) autoShapeComponentRes.getMinHeight());
         this.iconStringPos=FontFunctions.drawHighlightedString(coverBox,grphcs,iconString,DEFAULT_FONT_STLYE,fontColor , bckColor,icon_x_indent_ratio, icon_y_indent_ratio);    
   //          }
     }
 
     @Override
     public void setLocation(Point p) {
-          if (currBaseLocation==null)
-                    currBaseLocation=p;          
-        Point adjLocation=getAdjCurrLocation(currBaseLocation);
+//          if (currBaseLocation==null)
+//                    currBaseLocation=p;          
+        Point adjLocation=getAdjCurrLocation();
         super.setLocation(adjLocation); //To change body of generated methods, choose Tools | Templates.                
     }                
-   
-    protected Point getAdjCurrLocation(Point location)
-    {            
-            //updateParentSizeRatios();
-            Point returnPoint=new Point();                        
-            double adjX=(location.getX()<=BORDER_SECURE_DIST? BORDER_SECURE_DIST : location.getX())*getLocRatioWidth();
-            double adjY=(location.getY()<=BORDER_SECURE_DIST? BORDER_SECURE_DIST : location.getY())*getLocRatioHeight();
-            returnPoint.setLocation(adjX, adjY);           
-            //returnPoint=getMaxLocation(returnPoint);
-            returnPoint=getMinMaxLocation(returnPoint);
-            return returnPoint;            
-    }
-    
-    protected Point getMinMaxLocation(Point location)
-    {
-            Point returnPoint=new Point();                        
-            double parentWidth=parentPane.getAdjCurrSize(true, true, false).getWidth();
-            double parentHeight=parentPane.getAdjCurrSize(true, true, false).getHeight();            
-            double adjX=location.getX()<=(parentWidth-minWidth-BORDER_SECURE_DIST)?location.getX():parentWidth-minWidth-BORDER_SECURE_DIST;
-            double adjY=location.getY()<=(parentHeight-minHeight-BORDER_SECURE_DIST)?location.getY():parentHeight-minHeight-BORDER_SECURE_DIST;            
-            //returnPoint.setLocation((adjX<=1)?1:adjX,(adjY<=1)?1:adjY);
-            returnPoint.setLocation(adjX,adjY);
-            return returnPoint;        
-    }        
+        
         
     @Override
-    public void setSize(Dimension d) {  
-                Dimension adjSize=getAdjCurrSize(true,true,true);                                 
+    public void setSize(Dimension d) {          
+                Dimension adjSize=getAdjCurrSize(true);                                 
+                setLocation(null); 
                 super.setSize(adjSize); //To change body of generated methods, choose Tools | Templates.                    
                 //this.iconStringPos=new Point((int)minWidth/5,(int)minHeight/2);        
     }   
-       
-    @Override
-    public Dimension getAdjCurrSize(boolean checkMin, boolean adjLocation, boolean calcWithMotion)
-    {                 
-            Dimension adjSize=new Dimension();              
-            setMinDimensions(checkMin,adjLocation);
-            if (adjLocation)
-                setLocation(currBaseLocation); 
-           adjSize.setSize(getSizeRatioWidth()*currBaseSize.getWidth(),getSizeRatioHeight()*currBaseSize.getHeight());
-          // if (!parentPane.isMinimzed())               
-                adjSize=getMaxSize(adjSize,calcWithMotion);                                                                        
-          // if (checkMin)     
-              // adjSize=getMinSize(adjSize);                                                 
-           adjSize.setSize(adjSize.getWidth()*(calcWithMotion?motionRatio:1), adjSize.getHeight()*(calcWithMotion?motionRatio:1));                                                        
-           return adjSize;
-    }
 
     
-    protected void setMinDimensions(boolean checkMin, boolean adjLocation) {
-        if (parentPane!=null)
-            {
-            minWidth=parentPane.getAdjCurrSize(checkMin, adjLocation, false).getWidth()*minWidthMultiplier;
-            minHeight=parentPane.getAdjCurrSize(checkMin, adjLocation, false).getHeight()*minHeightMultiplier;
-            }
-   }
-    
-    protected Dimension getMaxSize(Dimension s,  boolean calcWithMotion)
-    {
-            Dimension parentPaneSize=parentPane.getAdjCurrSize(true, true,calcWithMotion);
-            double maxWidth=(parentPaneSize.getWidth())-getAdjCurrLocation(currBaseLocation).getX()-BORDER_SECURE_DIST;            
-            double maxHeight=(parentPaneSize.getHeight())-getAdjCurrLocation(currBaseLocation).getY()-BORDER_SECURE_DIST;//-getY();
-            double newWidth=(s.getWidth()<=maxWidth)? s.getWidth():maxWidth;
-            double newHeight=(s.getHeight()<=maxHeight)? s.getHeight():maxHeight;
-            Dimension adjSize=new Dimension();
-            adjSize.setSize(newWidth,newHeight);                                            
-            return adjSize;
-    }
-    
-    protected Dimension getMinSize(Dimension size)
-    {
-        double newWidth=size.getWidth();
-        double newHeight=size.getHeight();
-        newHeight=(newHeight<minHeight?minHeight:newHeight);
-        newWidth=(newWidth<minWidth?minWidth:newWidth);        
-        Dimension adjSize=new Dimension();
-        adjSize.setSize(newWidth,newHeight);
-        return adjSize;
-        
-    }
-        
     @Override
-    public void updateSizeLocation() {                
-        //if (shown||underConst) 
-        //       {
-                setSize(currBaseSize);                      
-                currentBorder();
-                repaint();
-//               }
-    }        
-        
-       @Override
+    public Dimension getAdjCurrSize(boolean calcWithMotion) {
+        return autoShapeComponentRes.getAdjCurrSize(calcWithMotion);
+    }
+
+    @Override
+    public Point getAdjCurrLocation() {
+        return autoShapeComponentRes.getAdjCurrLocation();
+    }
+    
+    @Override
+    public void setCurrBaseSizeLocToCurrSizeLoc(boolean adminEnabled) {
+        autoShapeComponentRes.setCurrBaseSizeLocToCurrSizeLoc(adminEnabled);
+    }     
+    
+    @Override
     public double getSizeRatioWidth() {
-        return sizeRatioWidth*parentPane.getSizeRatioWidth();
+        return autoShapeComponentRes.getSizeRatioWidth();
     }
 
     @Override
     public double getSizeRatioHeight() {
-        return sizeRatioHeight*parentPane.getSizeRatioHeight();
+        return autoShapeComponentRes.getSizeRatioHeight();
     }
 
-    public double getLocRatioWidth() {
-        return locRatioWidth*parentPane.getSizeRatioWidth();
-    }
-
-    public double getLocRatioHeight() {
-        return locRatioHeight*parentPane.getSizeRatioHeight();
+    @Override
+    public Dimension getMinSize(Dimension size) {
+        return autoShapeComponentRes.getMinSize(size);
+    }        
+    
+    @Override
+    public void updateSizeLocation() {                
+        //if (shown||underConst) 
+        //       {
+                setSize(null);
+                repaint();
+//               }
     }        
         
-    @Override
-    public void setVisible(boolean aFlag) {
-                super.setVisible(aFlag); //To change body of generated methods, choose Tools | Templates.
-                setToolTipText(toolTipText); 
-//                double currentWidth=minWidth>currBaseSize.getWidth()?minWidth:currBaseSize.getWidth();
-//                double currentHeight=minHeight>currBaseSize.getHeight()?minHeight:currBaseSize.getHeight();
-//                sizeRatioWidth=currBaseSize.getWidth()/currentWidth;
-//                sizeRatioHeight=currBaseSize.getHeight()/currentHeight;
-                
-               // currentBorder();
-    }
     
-    @Override
-    public synchronized void setCurrBaseSizeLocToCurrSizeLoc(boolean adminEnabled) {   
-        //updateParentSizeRatios();                    
-        Dimension adjSize=(adminEnabled)?getAdjCurrSize(true,false,false):getAdjCurrSize(true,false,false);                               
-        System.out.println("parentsizeratioheight:"+parentPane.getSizeRatioHeight());
-       System.out.println("adjsize:"+adjSize);
-        sizeRatioHeight=sizeRatioWidth=1;        
-        adjSize.setSize(adjSize.getWidth()/(adminEnabled?getSizeRatioWidth():1)/1,adjSize.getHeight()/(adminEnabled?getSizeRatioHeight():1)/1);       
-        Point adjLocation=(adminEnabled)?getAdjCurrLocation(currBaseLocation):getAdjCurrLocation(currBaseLocation);
-        locRatioWidth=locRatioHeight=1;
-        adjLocation.setLocation(adjLocation.getX()/(adminEnabled?getLocRatioWidth():1), adjLocation.getY()/(adminEnabled?getLocRatioHeight():1));
-        System.out.println("currbaseSizeprev:"+currBaseSize);
-        currBaseLocation=adjLocation;
-        currBaseSize=adjSize;                
-        System.out.println("currbaseSize:"+currBaseSize);
-    }
-    
-    @Override
-    public synchronized void adjCurrBaseSize(double addWidth, double addHeight, boolean adjustLoc) {                
-        if (!underConst)
-            {
-            underConst=true;
-            Dimension adjDim=new Dimension();                
-            Dimension origDim=new Dimension(); 
-            origDim=getAdjCurrSize(true,adjustLoc,false);
-            adjDim.setSize(origDim.getWidth()+addWidth, origDim.getHeight()+addHeight);                    
-            if (adjustLoc)    
-            {
-                adjCurrBaseLocation(-addWidth,-addHeight);                                        
-            }
-//            if (adjustLoc)    
-//                    adjCurrBaseLocation((origDim.getWidth()-adjDim.getWidth()),origDim.getHeight()-adjDim.getHeight());                                        
-            adjDim=getMaxSize(adjDim,false);                            
-            adjDim=getMinSize(adjDim);        
-            sizeRatioWidth=(adjDim.getWidth()/origDim.getWidth())*sizeRatioWidth;
-            sizeRatioHeight=(adjDim.getHeight()/origDim.getHeight())*sizeRatioHeight;
-            
-            System.out.println("NewRatioWidth:"+sizeRatioWidth+" origwidth:"+origDim.getWidth()+" newWidth:"+adjDim.getWidth());            
-            updateSizeLocation();
-            constructed();
-            }
-    }
-    
-    @Override
-    public synchronized void adjCurrBaseLocation(double addX, double addY) {
-        //setRatiosParent();
-        Point origLocation=getAdjCurrLocation(currBaseLocation);
-        Point adjLocation=new Point();                            
-        //Dimension parentPaneSize=parentPane.getAdjCurrSize(true, true,false);
-        double adjX=origLocation.getX()+(addX);
-        double adjY=origLocation.getY()+(addY);
-        adjX=adjX>=BORDER_SECURE_DIST?adjX:BORDER_SECURE_DIST;
-        adjY=adjY>=BORDER_SECURE_DIST?adjY:BORDER_SECURE_DIST;        
-        adjLocation.setLocation(adjX,adjY);
-        adjLocation=getMinMaxLocation(adjLocation);
-        locRatioWidth=(adjLocation.getX()/origLocation.getX())*locRatioWidth;
-        locRatioHeight=(adjLocation.getY()/origLocation.getY())*locRatioHeight;            
-        updateSizeLocation();
-    }
-       
+//    @Override
+//    public synchronized void adjCurrBaseSize(double addWidth, double addHeight, boolean AdjustLoc) {                
+//        if (!underConst)
+//            {
+//            underConst=true;
+//            autoShapeComponentRes.adjCurrBaseSize(addWidth, addHeight, AdjustLoc);            
+//            updateSizeLocation();
+//            constructed();
+//            }
+//    }
     
     @Override
     public boolean isAdminEnabled() {
@@ -589,18 +453,13 @@ public class PictureComponent extends AdaptPictJComponent{
 
     @Override
     public int compareTo(PictureComponentInterface o) {
-        return ((Integer) this.getParentPane().getComponentOrder(this)).compareTo(((Integer) o.getParentPane().getComponentOrder(o)));
-        
+        return ((Integer) this.getParentPane().getComponentOrder(this)).compareTo(((Integer) o.getParentPane().getComponentOrder(o)));       
     }
 
     @Override
-    public Dimension getCurrBaseSize() {
-        return currBaseSize;
+    public AutoShapeCompResInt getAutoShapeCompRes() {
+        return autoShapeComponentRes;
     }
-
-    @Override
-    public Point getCurrBaseLocation() {
-        return currBaseLocation;
-    }
+    
 }
                    

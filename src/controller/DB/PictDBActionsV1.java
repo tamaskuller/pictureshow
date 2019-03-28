@@ -147,8 +147,8 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
     {
             
             pictureFrameTable.setAdminEnabled(booleanToShort(pictureFrameGetters.isAdminEnabled()));            
-            pictureFrameTable.setCurrBaseSizeHeight(pictureFrameGetters.getCurrBaseSize().getHeight());
-            pictureFrameTable.setCurrBaseSizeWidth(pictureFrameGetters.getCurrBaseSize().getWidth());        
+//            pictureFrameTable.setCurrBaseSizeHeight(pictureFrameGetters.getCurrBaseSize().getHeight());
+//            pictureFrameTable.setCurrBaseSizeWidth(pictureFrameGetters.getCurrBaseSize().getWidth());        
             pictureFrameTable.setFrameSizeHeight(pictureFrameGetters.getFrameSize().getHeight());
             pictureFrameTable.setFrameSizeWidth(pictureFrameGetters.getFrameSize().getWidth());
             pictureFrameTable.setFullState(booleanToShort (pictureFrameGetters.isFullState()));                
@@ -235,7 +235,7 @@ public final class PictDBActionsV1 extends AbsPictDBActionsPaneComp implements P
       //  pictureComponentTable.setImagePath("");
         pictureComponentTable.setMinHeight(pictureComponentGet.getMinHeight());
         pictureComponentTable.setMinWidth(pictureComponentGet.getMinWidth());  
-        pictureComponentTable.setMotionRatio(pictureComponentGet.getMotionRatio());
+//        pictureComponentTable.setMotionRatio(pictureComponentGet.getMotionRatio());
         pictureComponentTable.setMotiontypemapID(0);
         pictureComponentTable.setOrigSizeHeight(pictureComponentGet.getOrigSize().getHeight());
         pictureComponentTable.setOrigSizeWidth(pictureComponentGet.getOrigSize().getWidth());

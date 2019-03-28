@@ -5,6 +5,7 @@
  */
 package view.interfaces;
 
+import view.interfaces.AutoShape.AutoShapedCompInt;
 import java.awt.Color;
 import view.recordtypeclasses.PaintRequestParams;
 import view.util.Observer;
@@ -13,7 +14,7 @@ import view.util.Observer;
  *
  * @author Kuller Tamas
  */
-public interface PictureComponentInterface extends AutoShapeComponentInt, AutoShapeCompGettersInt,AutoShapeCompResizeableInt,ActiveComponentInt, AdministratableInt, AttachedGettersInt<Object>, ImageInt<NamedImageInt>,MenuInterface, Comparable<PictureComponentInterface> {
+public interface PictureComponentInterface extends AutoShapedCompInt,ActiveComponentInt, AdministratableInt, AttachedGettersInt<Object>, ImageInt<NamedImageInt>,MenuInterface, Comparable<PictureComponentInterface> {
      public void paintPict(PaintRequestParams paintRequest);  
      public PicturePaneInterface getParentPane();
      //public Color getResizeBorderColor();   
@@ -25,4 +26,6 @@ public interface PictureComponentInterface extends AutoShapeComponentInt, AutoSh
      public void removeImage();
      public boolean isUnderConst();
      public boolean isMinimzed();  
+     public boolean isResizeable();     
+    
 }

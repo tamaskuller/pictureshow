@@ -130,7 +130,7 @@ public final class CompListenerBuildSingVer1 extends ListenerBuildAbs {
                             //addX=moveX;
                             addY=moveY;                                                
                             addX=moveX;                                
-                            component.adjCurrBaseLocation(addX, addY);                            
+                            component.getAutoShapeCompRes().adjCurrBaseLocation(addX, addY);                            
                         }
                     else if (component.isResizeable())
                         {
@@ -161,7 +161,7 @@ public final class CompListenerBuildSingVer1 extends ListenerBuildAbs {
                                     addHeight=moveY;
                                     break;                                       
                             }                        
-                        component.adjCurrBaseSize(addWidth, addHeight,adjustLoc);                        
+                        component.getAutoShapeCompRes().adjCurrBaseSize(addWidth, addHeight, adjustLoc);                        
                         }
                     mouseOrigPosition=e.getLocationOnScreen();
                     

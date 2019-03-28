@@ -5,6 +5,8 @@
  */
 package view.interfaces;
 
+import view.interfaces.AutoShape.AutoShapeCompResGettersInt;
+import view.interfaces.AutoShape.AutoShapeCompGettersInt;
 import java.awt.Dimension;
 import java.awt.Point;
 import view.enums.MotionTypes;
@@ -14,7 +16,7 @@ import util.mapping.MapInterface;
  *
  * @author Tamas Kuller
  */
-public interface PictureComponentGettersInt extends AutoShapeCompGettersInt,AdministratableGetterInt,AutoShapeCompResGettersInt {
+public interface PictureComponentGettersInt extends AdministratableGetterInt,AutoShapeCompGettersInt, AutoShapeCompResGettersInt {
 
     public double getMinWidth();    
     public double getMinHeight();    
@@ -23,8 +25,7 @@ public interface PictureComponentGettersInt extends AutoShapeCompGettersInt,Admi
     public String getIconString();
     public String getToolTipText();        
     public MotionTypes getDefaultMotionType();    
-    public MapInterface getMotionTypeMaps();    
-    public double getMotionRatio();    
+    public MapInterface getMotionTypeMaps();        
     public boolean isShown();
     public NamedImageInt getImage();  
     public String getImagePath();

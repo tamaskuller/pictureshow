@@ -12,7 +12,7 @@ import view.enums.MotionTypes;
  *
  * @author Tamas Kuller
  */
-public interface PicturePaneGettersInt extends AutoShapeCompGettersInt,AutoShapeCompResGettersInt, MultiComponentGetterInt, AdministratableGetterInt    
+public interface PicturePaneGettersInt extends MultiComponentGetterInt, AdministratableGetterInt    
 {
     public MotionTypes getReOrderMotionType(); 
     public List<PictureComponentInterface> getPictureComponents();  

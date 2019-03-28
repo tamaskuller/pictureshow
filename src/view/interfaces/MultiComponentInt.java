@@ -20,7 +20,8 @@ public interface MultiComponentInt {
     public void setFullState(boolean fullState, MotionTypes motionType, boolean checkMin);   
     public void showState(boolean forced, MotionTypes motionType);        
     public void hideShowSwitch();        
-       
+    
+    
     
     
     

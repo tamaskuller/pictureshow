@@ -12,14 +12,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.BorderFactory;
-import javax.swing.JPopupMenu;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
 import view.Menu.JPopupMenuAdj;
 import view.enums.MotionTypes;
 import view.interfaces.PicturePaneInterface;
@@ -36,7 +33,7 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
 
     protected final static float TRANSPARENCY=0.95f;
     protected List<PictureComponentInterface> pictureComponents;                  
-    private List<PaintRequestParams> stateRequests;        
+    //private List<PaintRequestParams> stateRequests;        
     protected PicturePaneGettersInt picturePaneGetters;
     private Object button;   
    protected MotionTypes reOrderMotionType=MotionTypes.FAST_FLOWING;   
@@ -49,10 +46,7 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     public PicturePane(PicturePaneInterface parent,PictCompParams params,boolean fullState) {                                      
        super(parent,params);                
         this.pictureComponents=new ArrayList<>();
-        this.stateRequests=new ArrayList<>();
-        fullStateCurrBaseSize=new Dimension();
-        fullStateCurrBaseSize.height=currBaseSize.height;
-        fullStateCurrBaseSize.width=currBaseSize.width;        
+        //this.stateRequests=new ArrayList<>();
         this.button=null;  
         this.shown=false;
         this.underConst=false;               
@@ -62,15 +56,10 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         this.activateClickCount=2;
         activeBorder=BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.BLUE, Color.CYAN);    
         System.out.println("Width:"+getWidth());                
-        minWidthMultiplier=0.3; 
+        autoShapeComponentRes.setMinWidthMultiplier(0.3); 
         this.fullState=fullState;
-        
         System.out.println("initfullstate:"+fullState);
     }
-
-    
-
-    
     
     @Override
     public synchronized void showState(boolean forced, MotionTypes motionType)
@@ -132,8 +121,6 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         update(Action.UNDERCONST_READY, this);
     }
 
-    
-    
     @Override
     public boolean isAdminEnabled() {
         return adminEnabled;
@@ -148,13 +135,11 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         return false;
         
     }
-    
    
     @Override
     public boolean isUnderConst() {         
         return super.isUnderConst()||underConstComp();//||isFullState()!=fullState;
     }
-
     
    @Override
     public boolean isFullState() {
@@ -170,14 +155,11 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     public void minimize() {
         setFullState(false, null, true);
     }   
-
     
     @Override
     public void maximize() {
         setFullState(true, null, true);
     }   
-
-    
         
     public void addComponent(Object component, int order)
     {
@@ -195,7 +177,6 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         addPictComponent(component, 0);
         this.button=component;               
     }                            
-    
     
     @Override
     public void addPictComponent(PictureComponentInterface component, int order)
@@ -220,8 +201,6 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     public void removePictPane(PicturePaneInterface picturePane) {
         removePictComponent(picturePane);
     }
-    
-    
     
     private int adjCompOrder(Object component, int order) {
         if (component==button||getComponentCount()==1)
@@ -250,7 +229,6 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         return 0;
     }
     
-    
     @Override
     public void showHideComponent(Object component ,MotionTypes motionType, boolean show, boolean forced, int order)
     {
@@ -270,8 +248,6 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         
     }
 
-       
-
     @Override
     public synchronized void paintPict(PaintRequestParams paintRequest) {
         minOverride=paintRequest.checkMin; 
@@ -285,8 +261,6 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         super.paintPict(new PaintRequestParams(show, forced, motionType,parentPane.getComponentOrder(this) ,checkMin));        
         minOverride=checkMin;
     }
-
-              
     
     @Override
     public void activateComponent(Object component, MotionTypes motionType)
@@ -295,7 +269,7 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     }
     
      private void setCompOrderMotion(Object component, int order,MotionTypes motionType)
-   {                
+       {                
             showHideComponent(component,motionType,false,true,getComponentOrder(component));                
             showHideComponent(component,motionType,true, true, adjCompOrder(component, order));                    
             Collections.sort(pictureComponents);
@@ -328,7 +302,6 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     super.setCurrBaseSizeLocToCurrSizeLoc(adminEnabled); 
     
     }   
-
     
     @Override
     public boolean adminSwitched() {
@@ -359,8 +332,6 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
             }
     }
 
-
-    
     @Override
     public Object getGetters() {          
         return this.picturePaneGetters;
@@ -410,16 +381,15 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
         parentPane.removePictPane(this);
         setVisible(false);       
     }
-    
-    
-    
 
       @Override
-    public Dimension getAdjCurrSize(boolean checkMin, boolean adjLocation, boolean calcWithMotion) {
-        Dimension adjSize=super.getAdjCurrSize(checkMin, adjLocation, calcWithMotion); //To change body of generated methods, choose Tools | Templates.        
+    public Dimension getAdjCurrSize(boolean calcWithMotion) {
+        Dimension adjSize=super.getAdjCurrSize(calcWithMotion); //To change body of generated methods, choose Tools | Templates.        
         if (minOverride)
-            adjSize=getMinSize(adjSize);                                      
+            adjSize=autoShapeComponentRes.getMinSize(adjSize);                                      
         return adjSize;
     }
+    
+    
     
  }   

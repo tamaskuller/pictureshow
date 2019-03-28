@@ -9,8 +9,6 @@ import java.awt.Dimension;
 import java.awt.Point;
 import view.enums.MotionTypes;
 import view.interfaces.PictureComponentGettersInt;
-import view.interfaces.AutoShapeCompResGettersInt;
-import view.interfaces.AutoShapeCompGettersInt;
 import util.mapping.MapInterface;
 import view.interfaces.NamedImageInt;
 import view.recordtypeclasses.AnimParams;
@@ -19,7 +17,7 @@ import view.recordtypeclasses.AnimParams;
  *
  * @author Tamas Kuller
  */
-public class PictureComponentGet implements PictureComponentGettersInt, AutoShapeCompGettersInt, AutoShapeCompResGettersInt{
+public class PictureComponentGet implements PictureComponentGettersInt{
     PictureComponent pictureComponent;
 
     public PictureComponentGet(PictureComponent pictureComponent) {
@@ -29,15 +27,20 @@ public class PictureComponentGet implements PictureComponentGettersInt, AutoShap
          
     @Override
     public double getMinWidth() {
-        return pictureComponent.minWidth;
+        return pictureComponent.autoShapeComponentRes.getMinWidth();
     }
 
     @Override
     public double getMinHeight() {
-        return pictureComponent.minHeight;
+        return pictureComponent.autoShapeComponentRes.getMinHeight();
     }
-    
-@Override
+
+    @Override
+    public Dimension getMinSize(Dimension size) {
+        return pictureComponent.autoShapeComponentRes.getMinSize(size);    
+    }
+            
+    @Override
     public Dimension getOrigSize() {
         return pictureComponent.origSize;
     }
@@ -57,8 +60,6 @@ public class PictureComponentGet implements PictureComponentGettersInt, AutoShap
     public String getToolTipText() {
         return pictureComponent.toolTipText;
     }
-   
-
     
     @Override
     public MotionTypes getDefaultMotionType() {
@@ -69,12 +70,7 @@ public class PictureComponentGet implements PictureComponentGettersInt, AutoShap
     public MapInterface<MotionTypes,AnimParams> getMotionTypeMaps() {
         return pictureComponent.motionTypeMaps;
     }
-
-    
-    @Override
-    public double getMotionRatio() {
-        return pictureComponent.motionRatio;
-    }
+       
 
 
     @Override
@@ -82,49 +78,30 @@ public class PictureComponentGet implements PictureComponentGettersInt, AutoShap
         return pictureComponent.shown;
     }
 
+    
+    
     @Override
     public Dimension getCurrBaseSize() {
-        return pictureComponent.currBaseSize;
+        return pictureComponent.autoShapeComponentRes.getCurrBaseSize();
     }
 
 
     @Override
     public Point getCurrBaseLocation() {
-        return  pictureComponent.currBaseLocation;
+        return  pictureComponent.autoShapeComponentRes.getCurrBaseLocation();
     }
-
-//    @Override
-//    public double getSizeParentRatioWidth() {
-//     return  pictureComponent.sizeParentRatioWidth;
-//    }
-//
-//    @Override
-//    public double getSizeParentRatioHeight() {
-//        return  pictureComponent.sizeParentRatioHeight;
-//    }            
-
+    
     @Override
     public double getSizeRatioWidth() {
-        return  pictureComponent.sizeRatioWidth;
+        return  pictureComponent.getSizeRatioWidth();
     }
 
     @Override
     public double getSizeRatioHeight() {
-        return  pictureComponent.sizeRatioHeight;
+        return  pictureComponent.getSizeRatioHeight();
     }
 
-    @Override
-    public Dimension getSize() {
-        return pictureComponent.getSize();
-    }
-
-    @Override
-    public Point getLocation() {
-        return pictureComponent.getLocation();
-    }
     
-    
-
     @Override
     public boolean isAdminEnabled() {
         return pictureComponent.adminEnabled;
@@ -147,10 +124,7 @@ public class PictureComponentGet implements PictureComponentGettersInt, AutoShap
         return pictureComponent.parentPane.getComponentOrder(pictureComponent);
     }
 
-    
-
    
     
-
 
 }

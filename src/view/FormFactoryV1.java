@@ -18,10 +18,10 @@ import controller.inputform.FramesTableFormSingV2;
 import controller.inputform.MessageFormV1;
 import controller.inputform.InstructionForm;
 import view.recordtypeclasses.JFrameBaseFormParams;
-import view.interfaces.AutoShapeComponentInt;
 import view.interfaces.PicturePaneInterface;
 import view.util.Observer;
 import view.util.Observer.Action;
+import view.interfaces.AutoShape.AutoShapeCompInt;
 
 /**
  *
@@ -30,7 +30,7 @@ import view.util.Observer.Action;
 public class FormFactoryV1 <F> {
 static Object formObject;
 static JFrame form;
-static AutoShapeComponentInt autoForm;
+static AutoShapeCompInt autoForm;
 static Observer observerForm;
 static PictureFrameInterface mainForm;
 static int onClose;

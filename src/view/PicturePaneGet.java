@@ -22,9 +22,6 @@ public class PicturePaneGet extends PictureComponentGet implements PicturePaneGe
         this.picturePane = picturePane;
     }
 
-   
-    
-    
     
     @Override
     public MotionTypes getReOrderMotionType() {

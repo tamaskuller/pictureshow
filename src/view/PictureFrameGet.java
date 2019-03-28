@@ -7,7 +7,6 @@ package view;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Point;
 import view.interfaces.NamedImageInt;
 import view.interfaces.PictureFrameGettersInt;
 
@@ -21,9 +20,6 @@ public class PictureFrameGet implements PictureFrameGettersInt{
     public PictureFrameGet(PictureFrame pictureFrame) {
         this.pictureFrame = pictureFrame;
     }
-    
-    
-            
     
        @Override
     public Color getOldBackGroundColor() {
@@ -63,31 +59,6 @@ public class PictureFrameGet implements PictureFrameGettersInt{
     }
 
 
-    
-    @Override
-    public Dimension getCurrBaseSize() {
-        return pictureFrame.getCurrBaseSize();
-    }
-
-    @Override
-    public Dimension getSize() {
-        return pictureFrame.getSize();                
-    }
-
-    @Override
-    public Point getCurrBaseLocation() {
-        return pictureFrame.getCurrBaseLocation();
-    }
-
-    @Override
-    public Point getLocation() {
-        return pictureFrame.getLocation();
-    }
-
- 
-    
-    
-
     @Override
     public boolean isAdminEnabled() {
         return pictureFrame.isAdminEnabled();
@@ -109,9 +80,5 @@ public class PictureFrameGet implements PictureFrameGettersInt{
     public int getComponentOrder(Object component) {
         return pictureFrame.getComponentOrder(component);
     }
-
-    
-
-
-    
+   
 }

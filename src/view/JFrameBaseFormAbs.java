@@ -9,7 +9,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import javax.swing.JFrame;
 import util.StaticEnvironmentParams;
-import view.interfaces.AutoShapeFormInt;
+import view.interfaces.AutoShape.AutoShapeFormInt;
 import view.interfaces.PictureFrameInterface;
 import view.recordtypeclasses.JFrameBaseFormParams;
 
@@ -63,6 +63,6 @@ public abstract class JFrameBaseFormAbs extends JFrame implements AutoShapeFormI
         if (parentFrame==null)                 
             return new Point(0,0);
         else
-            return parentFrame.getCurrBaseLocation();              
+            return parentFrame.getLocation();  
     }
 }
