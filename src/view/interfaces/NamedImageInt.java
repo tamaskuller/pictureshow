@@ -13,6 +13,6 @@ import java.awt.Image;
  */
 public interface NamedImageInt extends ImageInt<Image>, ImageGetterInt<Image>{
     public String getImageName();
-    public void setImageName(String Name);
+    public void setImageName(String Name);   
     
 }

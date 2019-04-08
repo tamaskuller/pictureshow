@@ -1,0 +1,1 @@
+javaw -Xms64m -Xmx1024m -jar %~dp0\PictureShow.jar Jobs

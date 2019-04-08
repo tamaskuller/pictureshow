@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.border.BevelBorder;
+import model.ImageFactoryV1;
 import view.Menu.JPopupMenuAdj;
 import view.enums.MotionTypes;
 import view.interfaces.PicturePaneInterface;
@@ -195,6 +196,10 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
     public void removePictComponent(PictureComponentInterface pictureComponent) {
         pictureComponents.remove(pictureComponent);
         Collections.sort(pictureComponents);
+        pictureComponent=null;
+        picturePaneGetters=null;
+        button=null;
+       // pictureComponent.Delete();
     }
 
     @Override
@@ -373,13 +378,20 @@ public class PicturePane extends PictureComponent implements PicturePaneInterfac
             transparency=0.8f;
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));                        
         super.paint(g); //To change body of generated methods, choose Tools | Templates.                        
+        g=null;
         
     }
 
     @Override
-    public void Delete() {
-        parentPane.removePictPane(this);
-        setVisible(false);       
+    public synchronized void Delete() {                
+        while (!pictureComponents.isEmpty())
+            {PictureComponentInterface toDelete=pictureComponents.get(0);
+            removePictComponent(toDelete);
+            toDelete.Delete();
+            toDelete=null;
+            }
+        picturePaneGetters=null;        
+        super.Delete();        
     }
 
       @Override

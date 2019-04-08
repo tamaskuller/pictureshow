@@ -22,6 +22,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Timer;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import model.ImageFactoryV1;
 import view.enums.MotionTypes;
 import view.interfaces.PictureComponentInterface;
 import view.interfaces.PicturePaneInterface;
@@ -114,7 +115,7 @@ public class PictureComponent extends AdaptPictJComponent{
     }
 
     public PictureComponent(PicturePaneInterface parent, PictCompParams params) {
-        this(params);
+        this(params);     
         this.parentPane=parent;             
         this.autoShapeComponentRes=new AutoShapeCompRes(parentPane, this,BORDER_SECURE_DIST, currBaseSize, currBaseLocation, 0.2, 0.1);
     }            
@@ -212,6 +213,7 @@ public class PictureComponent extends AdaptPictJComponent{
                 }
         Dimension coverBox=new Dimension((int) ((getWidth()<autoShapeComponentRes.getMinWidth())?getWidth():autoShapeComponentRes.getMinWidth()),(int) autoShapeComponentRes.getMinHeight());
         this.iconStringPos=FontFunctions.drawHighlightedString(coverBox,grphcs,iconString,DEFAULT_FONT_STLYE,fontColor , bckColor,icon_x_indent_ratio, icon_y_indent_ratio);    
+        g=null;
   //          }
     }
 
@@ -415,9 +417,11 @@ public class PictureComponent extends AdaptPictJComponent{
     }
 
     @Override
-    public void Delete() {
-        parentPane.removePictComponent(this);
-        setVisible(false);
+    public synchronized void Delete() {
+        pictureComponentGetters=null;                    
+        if (image!=null)
+            ImageFactoryV1.removeImage(image);            
+        setVisible(false);        
     }
 
     @Override

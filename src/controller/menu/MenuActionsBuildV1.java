@@ -154,8 +154,9 @@ public class MenuActionsBuildV1 implements MenuActionsInt{
                 PictureComponentInterface toDelete=(PictureComponentInterface) popupMenu.getInvoker();                
                 if (JOptionPane.showConfirmDialog(popupMenu, "Are you sure you want to delete "+toDelete.getIconString()+" component?","Delete Component?", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
                     {                    
-                    toDelete.getParentPane().getPictureComponents().remove(toDelete);
+                    //toDelete.getParentPane().getPictureComponents().remove(toDelete);
                     toDelete.Delete();
+                    System.gc();
                     }
             }
             };            

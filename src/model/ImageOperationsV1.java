@@ -23,6 +23,7 @@ public class ImageOperationsV1{
     
     public static NamedImageInt getNamedImage(String path, String name) {                                  
         BufferedImage imageTemp=null;         
+        NamedImageInt result=null;
        URL url=null;       
        File file=null;
        String actualPath=(path==null||path.isEmpty())?StaticEnvironmentParams.getProjectPath()+StaticEnvironmentParams.REL_PATH_TO_PICT+name:path;                  
@@ -36,19 +37,25 @@ public class ImageOperationsV1{
             if (url==null)
                 {
                 file=new File(actualPath); 
-                imageTemp = ImageIO.read(file);
+                imageTemp = ImageIO.read(file);                               
                 name=(name==null || name.isEmpty())?file.getName():name;
+                file=null;
                  }
             else
                 {
                  imageTemp = ImageIO.read(url);
                  System.out.println("read using URL");
+                 url=null;
                 }
             } catch (IOException ex) {
                 System.out.println("File couldn't be read from"+path);                      
             }
        if (imageTemp!=null)
-            return new NamedImage(imageTemp, name);                                 
+            {
+           result=new NamedImage(imageTemp, name);                                
+           imageTemp.flush();
+           return result;
+           }
        else
            return null;
        }

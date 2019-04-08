@@ -45,7 +45,12 @@ public class NamedImage implements NamedImageInt {
         this.imageName = imageName;
     }
 
-    
-    
-    
+    @Override
+    public boolean equals(Object obj) {
+        if (imageName!=null &&obj instanceof NamedImage)
+            return this.imageName.equals(((NamedImage)obj).imageName);
+        return super.equals(obj); //To change body of generated methods, choose Tools | Templates.
+    }
+
+       
 }

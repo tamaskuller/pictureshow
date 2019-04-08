@@ -15,10 +15,14 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowStateListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
@@ -106,18 +110,19 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
             public synchronized void componentResized(ComponentEvent e) {                
                 super.componentResized(e); //To change body of generated methods, choose Tools | Templates.                                                                                          
                 updateSizeLocation();                             
-            }
+            }            
             });                    
 
         JFrameBaseFormAbs saveThis=this;
-        
         this.addWindowListener(new WindowAdapter() {            
+            WindowListener saveWindowAd=this;
             @Override
             public void windowClosed(WindowEvent e) {
-                activated=false;                                
+                activated=false;                                     
                 super.windowClosed(e); //To change body of generated methods, choose Tools | Templates.                
+                System.gc();
             }
-
+                       
             @Override
             public synchronized void windowClosing(WindowEvent e) {
                 if (adminAdjLayout)
@@ -126,8 +131,13 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
                     String title="Are you sure to close "+((mainForm)?"the Application?":saveThis.getTitle()+" Frame?");                    
                     if (JOptionPane.showConfirmDialog(saveThis, question,title, JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION)                                
                         saveThis.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);                         
+                    }                
+               if (saveThis.getDefaultCloseOperation()!=DO_NOTHING_ON_CLOSE)                    
+                    {                    
+                   Delete();
                     }
-                super.windowClosing(e); //To change body of generated methods, choose Tools | Templates.                                            
+               super.windowClosing(e);
+
             }
 
             @Override
@@ -179,6 +189,7 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
         this.picturePanes.remove(picturePane);  
         this.picturePanesUnderConst.remove(picturePane);
         Collections.sort(picturePanes);
+        picturePane=null;
     }
     
     public void removeComponent(Object component)
@@ -209,7 +220,7 @@ public class PictureFrame extends JFrameBaseFormAbs implements PictureFrameInter
     }    
 
     @Override
-    public void setVisible(boolean b) {
+    public void setVisible(boolean b) {        
         super.setVisible(b); //To change body of generated methods, choose Tools | Templates.        
         activated=b;       
     }
@@ -571,8 +582,15 @@ private class PictContentPane extends Container{
     }
 
     @Override
-    public void Delete() {
-                setVisible(false);
+    public synchronized void Delete() {        
+        while (!picturePanes.isEmpty())
+              {                                    
+             PicturePaneInterface toDelete=picturePanes.get(0);
+             removePictPane(toDelete);
+             toDelete.Delete();
+             toDelete=null;
+              }                
+        setVisible(false);
     }
 
     @Override

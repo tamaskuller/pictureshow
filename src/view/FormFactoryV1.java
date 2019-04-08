@@ -17,6 +17,8 @@ import controller.inputform.CompCreateInputFormV1;
 import controller.inputform.FramesTableFormSingV2;
 import controller.inputform.MessageFormV1;
 import controller.inputform.InstructionForm;
+import java.util.ArrayList;
+import java.util.List;
 import view.recordtypeclasses.JFrameBaseFormParams;
 import view.interfaces.PicturePaneInterface;
 import view.util.Observer;
@@ -28,6 +30,7 @@ import view.interfaces.AutoShape.AutoShapeCompInt;
  * @author Tamas Kuller
  */
 public class FormFactoryV1 <F> {
+static List<PictureFrameInterface> pictureFrames=new ArrayList<>();
 static Object formObject;
 static JFrame form;
 static AutoShapeCompInt autoForm;
@@ -90,7 +93,8 @@ static int onClose;
                 form=pictureFrame;    
                 formObject=pictureFrame;    
                 observerForm=pictureFrame;    
-                PictDBActionsV1.getInstance().addObserver(pictureFrame);               
+                PictDBActionsV1.getInstance().addObserver(pictureFrame); 
+                pictureFrames.add(pictureFrame);
                 if (mainForm==null)
                     {
                     mainForm=pictureFrame;
@@ -104,17 +108,19 @@ static int onClose;
         {
         if (form!=mainForm)            
             form.setDefaultCloseOperation(onClose);                         
-            SwingUtilities.invokeLater(new Runnable (){                    
+        SwingUtilities.invokeLater(new Runnable (){                    
                     public void run() {
                         form.setVisible(true);                        
                         observerForm.update(Action.FRAME_READY, null);
                         System.out.println("formstarted");                                            
                     }
-                });                 
+                });                         
         }
      return (F) form;          
      }                               
 
-    
+    public static List<PictureFrameInterface> getPictureFrames() {
+        return pictureFrames;
+    }   
     
 }

@@ -63,8 +63,7 @@ public class PictCompParams {
     public double getHeight() {
         return height;
     }
- 
-    
+     
     
     public static class PictCompParamsBuild {    
     static PictCompParams pictCompParams;

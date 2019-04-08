@@ -21,7 +21,7 @@ public interface PicturePaneInterface extends PictureComponentInterface,MultiCom
     public void addPictPane(PicturePaneInterface pictPane, int order);
     public void removePictComponent(PictureComponentInterface pictureComponent);
     public void removePictPane(PicturePaneInterface picturePane);
-      public List<AttachedGettersInt> getPictureComponents();           
+      public List<PictureComponentInterface> getPictureComponents();           
        public Dimension getSize();
        public Point getLocation();
        

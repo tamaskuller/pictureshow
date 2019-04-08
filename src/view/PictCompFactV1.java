@@ -34,12 +34,12 @@ public final class PictCompFactV1 {
             case PICTURECOMPONENT:                
                 pictureComponent=new PictureComponent(parent,params); 
                 pictureComponentGetters=new PictureComponentGet((PictureComponent) pictureComponent);                
-                parent.addPictComponent(pictureComponent, order);            
+                parent.addPictComponent(pictureComponent, order);                
                 break;
             case PICTUREBUTTON:
                 pictureComponent=new PictureButton(parent,params);                  
                 pictureComponentGetters=new PictureComponentGet((PictureButton) pictureComponent);                
-                parent.addButton(pictureComponent, 0);            
+                parent.addButton(pictureComponent, 0);    
                 break;
             case PICTUREPANE:
                 pictureComponent=new PicturePane(parent,params,fullState);                    
@@ -82,8 +82,8 @@ public final class PictCompFactV1 {
                 .build();        
         if (button)
             PictCompFactV1.createPictComponent(PictCompTypes.PICTUREBUTTON,pictParams,picturePane,0,false);                                        
-        parent.addPictPane(picturePane, order);      
-       // picturePane.setVisible();        
+        parent.addPictPane(picturePane, order);                    
+        // picturePane.setVisible();        
        // picturePane.setFullState(fullState, null, true);
         return picturePane;
     }
